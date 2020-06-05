@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.uni-passau.fim</groupId>
-	<artifactId>projekt21</artifactId>
+	<artifactId>projekt40</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>projekt21</name>
 	<description>Eventplanungssystem</description>
