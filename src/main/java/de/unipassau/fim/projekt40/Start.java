@@ -63,7 +63,7 @@ public class Start {
         System.out.println("Geben Sie mind. einen gewünschten EventTypen" +
                 " für die Veranstaltungen an.");
         System.out.println("Bestätigen Sie jeweils mit Enter und geben Sie" +
-                " \"Quit\" ein um zu vollenden");
+                " \"quit\" ein um zu vollenden");
         while ((eventType = input.readLine()) != null
                 && !eventType.equals("quit")) {
             if (!eventType.equals("")) {
@@ -86,7 +86,7 @@ public class Start {
         System.out.println("Geben sie das Event wie folgt ein: <Name> <Ort>" +
                 " <YYYY-DD-MM> <Beschreibung> <EventTyp>");
         System.out.println("Bestätigen Sie jeweils mit Enter und geben Sie" +
-                " \"Quit\" ein um zu vollenden");
+                " \"quit\" ein um zu vollenden");
         while ((event = input.readLine()) != null
                 && !event.equals("quit")){
             String[] attributes = event.split("\\s+");

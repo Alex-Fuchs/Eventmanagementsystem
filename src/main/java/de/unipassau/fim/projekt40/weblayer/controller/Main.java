@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -41,7 +42,7 @@ class Main {
             }
         }
         doPreparations(request, events, model);
-        return "verlist";
+        return "index";
     }
 
     @GetMapping("add")
@@ -50,7 +51,7 @@ class Main {
         return "add";
     }
 
-    @GetMapping("sort")
+    @PostMapping("sort")
     public String ShowAllWithEventType(HttpServletRequest request, Model model, @RequestParam String sort) {
         List<Event> events;
         if (sort.equals("Alle (auch Vergangenheit)")) {
@@ -59,10 +60,10 @@ class Main {
             events = eventRepository.findByEventType(sort);
         }
         doPreparations(request, events, model);
-        return "verlist";
+        return "index";
     }
 
-    @GetMapping("search")
+    @PostMapping("search")
     public String showAllWithSearch(HttpServletRequest request, Model model, @RequestParam String entry) {
         List<Event> searchedEvents = new ArrayList<>();
         for (Event Event : eventRepository.findAllSort()) {
@@ -72,10 +73,10 @@ class Main {
             }
         }
         doPreparations(request, searchedEvents, model);
-        return "verlist";
+        return "index";
     }
 
-    @GetMapping("vote")
+    @PostMapping("vote")
     @ResponseBody
     public String vote (HttpServletRequest request, HttpServletResponse response, @RequestParam String id, @RequestParam String ranking) {
         int value = Integer.parseInt(ranking);
