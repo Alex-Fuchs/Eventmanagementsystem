@@ -10,6 +10,9 @@
     <a href="add">Veranstaltung hinzufügen</a><br>
     <a href="/">Startseite</a> <br><br><br><br><br><br>
     <a style="color:white;">Top 3 Events:</a>
+    <tr th:each="event : ${top3}" class="centerMe">
+        <span th:text="${event.ver_name}" class="centerMe" style="color:white; font-size:23px;" > Name </span>
+    </tr>
 </div>
 <div class="main">
     <table>
@@ -25,10 +28,9 @@
                     </select>
                 </label>
                 <input type="submit" value="anzeigen">
-            </form>
-        </th>
+            </form></th>
         <th>
-            <form action="search" method="post">
+            <form action="suche" method="post">
                 <input type="text" placeholder="Suche nach Veranstaltungen" name="entry">
                 <input type="submit" value="Suchen">
             </form>
@@ -42,6 +44,56 @@
         <th>Platz 2: Orange</th>
         <th>Platz 3: ROT</th>
         </thead>
+    </table>
+    <table >
+        <thead >
+        <tr>
+            <th scope="col" class="tableKopf">Name</th>
+            <th scope="col" class="tableKopf">Ort</th>
+            <th scope="col" class="tableKopf">Beschreibung</th>
+            <th scope="col" class="tableKopf">Art</th>
+            <th scope="col" class="tableKopf">Datum</th>
+            <th scope="col" class="tableKopf">Wetter</th>
+            <th scope="col" class="tableKopf">Ranking</th>
+            <th scope="col" class="tableKopf">Bewerten Sie</th>
+        </tr>
+        </thead>
+        <tbody class="category_table">
+        <tr th:if="${events.empty}">
+            <td colspan="2"> Leider keine Veranstaltungen vorhanden</td>
+        </tr>
+        <tr th:each="event : ${events}" >
+            <td><span th:text="${event.ver_name}"> Name </span></td>
+            <td><span th:text="${event.place}"> Ort </span></td>
+            <td><span th:text="${event.description}"> Beschreibung </span></td>
+            <td><span th:text="${event.eventType}"> art </span></td>
+            <td><span th:text="${event.datum}"> datum </span></td>
+            <td><span th:text="${event.weather}" id="wetter"> wetter </span></td>
+            <td><span th:text="${event.rank}" id="ranking"> Ranking </span></td>
+            <td><form action="vote" method="post">
+                <input type="hidden" th:value="${event.id}" name="id" />
+                <input type="hidden" value="1" name="ranking" />
+                <p th:if="${!#lists.contains(upVote, event.id)}">
+                    <input type="submit" value="       gut       " th:id="${event.id}" class="first">
+                </p>
+                <p th:if="${#lists.contains(upVote, event.id)}">
+                    <input type="submit" value="       gut       " th:id="${event.id}" class="second">
+                </p>
+            </form>
+                <form action="vote" method="post">
+                    <input type="hidden" th:value="${event.id}" name="id" />
+                    <input type="hidden" value="-1"  name="ranking" />
+                    <p th:if="${!#lists.contains(downVote, event.id)}">
+                        <input type="submit"  value="   schlecht   " th:id="${event.id}" class="first">
+                    </p>
+                    <p th:if="${#lists.contains(downVote, event.id)}">
+                        <input type="submit"  value="   schlecht   " th:id="${event.id}" class="second">
+                    </p>
+                </form>
+            </td>
+        </tr>
+        <br><br><br>
+        </tbody>
     </table>
 </div>
 </body>
