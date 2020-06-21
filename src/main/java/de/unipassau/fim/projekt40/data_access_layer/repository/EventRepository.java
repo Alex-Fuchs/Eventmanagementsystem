@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -47,11 +48,26 @@ public class EventRepository {
         }
     }
 
-    public List <Event> findAllSort() {
+    public List<Event> findAllSort() {
         List<Event> old = new ArrayList<>(jdbcTemplate.query(
                 "select * from Event", new VeranstaltungRowMapper()));
         old.sort(Comparator.comparing(Event::getRankingInt).reversed());
         return old;
+    }
+
+    public List<Event> findAllInFuture() {
+        List<Event> events = new ArrayList<>();
+        for (Event event: findAll()) {
+            if (checkDateIsInFuture(event.getDatum())) {
+                events.add(event);
+            }
+        }
+        return events;
+    }
+
+    public List<Event> findAll() {
+        return new ArrayList<>(jdbcTemplate.query(
+                "select * from Event", new VeranstaltungRowMapper()));
     }
 
     public List <Event> findByEventType(String eventType) {
@@ -61,19 +77,12 @@ public class EventRepository {
         return old;
     }
 
-    public List<Event> findByName(String name) {
-        List<Event> old = jdbcTemplate.query("SELECT * FROM Event WHERE VER_NAME =? ",
-                new Object[] { name }, new VeranstaltungRowMapper());
-        old.sort(Comparator.comparing(Event::getRankingInt).reversed());
-        return old;
-    }
-
     public Event findById(long id) {
         return jdbcTemplate.queryForObject("select * from Event where id=?",
                 new Object[] { id }, new VeranstaltungRowMapper());
     }
 
-    public Event findByExactName(String name) {
+    public Event findByName(String name) {
         return jdbcTemplate.queryForObject("SELECT * FROM Event WHERE VER_NAME =? ",
                 new Object[] { name }, new VeranstaltungRowMapper());
     }
@@ -84,7 +93,7 @@ public class EventRepository {
                         + "values(?,  ?, ?, ?, ?,?, ?, ?)",
                 vera.getId(), vera.getVer_name(), vera.getPlace(), vera.getDatum(), vera.getDescription(),
                 vera.getEventType(), vera.getRank(), vera.getWeather());
-        updateWeatherOfEvent(findByExactName(vera.getVer_name()));
+        updateWeatherOfEvent(findByName(vera.getVer_name()));
         return code;
     }
 
@@ -172,5 +181,4 @@ public class EventRepository {
             throw new IllegalArgumentException("Datum ist illegal!");
         }
     }
-
 }

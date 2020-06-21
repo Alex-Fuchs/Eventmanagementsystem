@@ -1,9 +1,8 @@
-package de.unipassau.fim.projekt40.weblayer.controller;
+package de.unipassau.fim.projekt40.web_layer.controller;
 
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
-import de.unipassau.fim.projekt40.data_access_layer.repository.EventRepository;
-import de.unipassau.fim.projekt40.data_access_layer.data_access_object.EventType;
-import de.unipassau.fim.projekt40.data_access_layer.repository.EventTypeRepository;
+import de.unipassau.fim.projekt40.service_layer.EventService;
+import de.unipassau.fim.projekt40.service_layer.EventTypeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,55 +23,36 @@ import java.util.List;
 @Controller
 class Main {
 
-    private EventRepository eventRepository;
-    private EventTypeRepository eventTypeRepository;
+    private EventService eventService;
+    private EventTypeService eventTypeService;
 
     @Autowired
-    public Main(EventRepository eventRepository, EventTypeRepository eventTypeRepository) {
-        this.eventRepository = eventRepository;
-        this.eventTypeRepository = eventTypeRepository;
+    public Main(EventService eventService, EventTypeService eventTypeService) {
+        this.eventService = eventService;
+        this.eventTypeService = eventTypeService;
     }
 
     @GetMapping()
     public String showAll(HttpServletRequest request, Model model) {
-        List<Event> events = new ArrayList<>();
-        for (Event event: eventRepository.findAllSort()) {
-            if (EventRepository.checkDateIsInFuture(event.getDatum())) {
-                events.add(event);
-            }
-        }
-        doPreparations(request, events, model);
+        doPreparations(request, eventService.getLast20InFuture(), model);
         return "index";
     }
 
     @GetMapping("add")
     public String addEvent(Model model) {
-        model.addAttribute("eventTypes", eventTypeRepository.findAll());
+        model.addAttribute("eventTypes", eventTypeService.getEventTypes());
         return "add";
     }
 
     @PostMapping("sort")
     public String ShowAllWithEventType(HttpServletRequest request, Model model, @RequestParam String sort) {
-        List<Event> events;
-        if (sort.equals("Alle (auch Vergangenheit)")) {
-            events = eventRepository.findAllSort();
-        } else {
-            events = eventRepository.findByEventType(sort);
-        }
-        doPreparations(request, events, model);
+        doPreparations(request, eventService.getLast20FilteredByEventType(sort), model);
         return "index";
     }
 
     @PostMapping("search")
     public String showAllWithSearch(HttpServletRequest request, Model model, @RequestParam String entry) {
-        List<Event> searchedEvents = new ArrayList<>();
-        for (Event Event : eventRepository.findAllSort()) {
-            if (Event.getVer_name().toLowerCase().contains(entry.toLowerCase()) ||
-                    Event.getPlace().toLowerCase().contains(entry.toLowerCase())) {
-                searchedEvents.add(Event);
-            }
-        }
-        doPreparations(request, searchedEvents, model);
+        doPreparations(request, eventService.getEventsBySearch(entry), model);
         return "index";
     }
 
@@ -89,8 +69,7 @@ class Main {
                 response.addCookie(new Cookie(id, ranking));
                 value += -1 * oldVoting;
             }
-            long tmp = Long.parseLong(id);
-            eventRepository.vote(tmp, value);
+            eventService.vote(Long.parseLong(id), value);
             return "\"<script LANGUAGE='JavaScript'>\n" +
                     "    window.alert('Vielen Dank für deinen Vote');\n" +
                     "    window.location.href='/';\n" +
@@ -107,21 +86,20 @@ class Main {
     @GetMapping("event")
     public String showEvent(HttpServletRequest request, Model model, @RequestParam String id) {
         List<Event> events = new ArrayList<>();
-        events.add(eventRepository.findById(Integer.parseInt(id)));
+        events.add(eventService.getEventById(Integer.parseInt(id)));
         doPreparations(request, events, model);
         return "event";
     }
 
     private void doPreparations(HttpServletRequest request, List<Event> events, Model model) {
-        getLast20(events);
-        setEventTypes(model);
         ArrayList<Long> upVote = new ArrayList<>();
         ArrayList<Long> downVote = new ArrayList<>();
         setUpDownVoteLists(request, upVote, downVote);
 
+        model.addAttribute("eventTypes", eventTypeService.getEventTypesWithAll());
         model.addAttribute("upVote", upVote);
         model.addAttribute("downVote", downVote);
-        model.addAttribute("top3", getTop3());
+        model.addAttribute("top3", eventService.getTop3());
         model.addAttribute("events", events);
     }
 
@@ -136,12 +114,6 @@ class Main {
                 }
             }
         }
-    }
-
-    private void setEventTypes(Model model) {
-        List<EventType> eventTypes = eventTypeRepository.findAll();
-        eventTypes.add(0, new EventType("Alle (auch Vergangenheit)"));
-        model.addAttribute("eventTypes", eventTypes);
     }
 
     private int getOldVoting(HttpServletRequest request, String id) {
@@ -161,18 +133,5 @@ class Main {
             }
         }
         return 0;
-    }
-
-    private List<Event> getTop3() {
-        if (eventRepository.findAllSort().size() <= 3) {
-            return eventRepository.findAllSort();
-        }
-        return eventRepository.findAllSort().subList(0, 3);
-    }
-
-    private void getLast20(List<Event> events) {
-        while (events.size() > 20) {
-            events.remove(0);
-        }
     }
 }

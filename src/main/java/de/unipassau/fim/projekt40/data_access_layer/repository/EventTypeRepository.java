@@ -2,6 +2,7 @@ package de.unipassau.fim.projekt40.data_access_layer.repository;
 
 import de.unipassau.fim.projekt40.Start;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.EventType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,11 @@ public class EventTypeRepository {
     public List <EventType> findAll() {
         return new ArrayList<>(jdbcTemplate.query(
                 "select * from EventType", new VeranstaltungRowMapper()));
+    }
+
+    public EventType findByName(String name) {
+        return jdbcTemplate.queryForObject("select * from EventType WHERE NAME =?",
+                new Object[] { name }, new VeranstaltungRowMapper());
     }
 
     private int insert(EventType eventType) {
