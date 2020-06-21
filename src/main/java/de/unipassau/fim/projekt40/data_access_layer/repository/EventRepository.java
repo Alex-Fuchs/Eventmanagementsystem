@@ -1,6 +1,7 @@
 package de.unipassau.fim.projekt40.data_access_layer.repository;
 
 import de.unipassau.fim.projekt40.Start;
+import de.unipassau.fim.projekt40.data_access_layer.JsonWeatherAPI;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,6 +26,7 @@ public class EventRepository {
             deleteAll();
             fetchEvents();
         }
+        setWeatherTask();
     }
 
     class VeranstaltungRowMapper implements RowMapper<Event> {
@@ -85,6 +87,12 @@ public class EventRepository {
                 "        WHERE id = ?", rank, id);
     }
 
+    private int updateWetterValue(Long id , String data) {
+        return jdbcTemplate.update("UPDATE Event\n" +
+                "        SET weather = ?\n" +
+                "        WHERE id = ?", data, id);
+    }
+
     private void fetchEvents() {
         List<Event> events = Start.getEvents();
         for (Event event: events) {
@@ -92,5 +100,59 @@ public class EventRepository {
         }
     }
 
+    private void setWeatherTask() {
+        Date date = new Date();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            public void run() {
+                System.out.println("UpdateWeatherTask is running at " + date
+                        + " with intervall of 1 hour");
+                updateWeather();
+            }
+        }, date, 60 * 60 * 1000);
+    }
+
+    private void updateWeather() {
+        List <Event> events = findAllSort();
+        for (Event Event : events) {
+            if (datumIsInOneWeek(Event.getDatum())) {
+                String id = JsonWeatherAPI.getWoeid(Event.getPlace());
+                String weather;
+                if (id != null && (weather = JsonWeatherAPI.getWeather(id, Event.getDatum())) != null) {
+                    Event.setWeather(weather);
+                    updateWetterValue(Event.getId(), weather);
+                } else {
+                    Event.setWeather("Ort nicht vorhanden");
+                    updateWetterValue(Event.getId(), "Ort nicht vorhanden");
+                }
+            } else {
+                Event.setWeather("Zu weit entfernt");
+                updateWetterValue(Event.getId(), "Zu weit entfernt");
+            }
+        }
+    }
+
+    private boolean datumIsInOneWeek(String datum) {
+        Date dateInOneWeek = new Date(new Date().getTime()
+                + 1000 * 60 * 60 * 24 * 7);
+        try {
+            Date date = new SimpleDateFormat("yyyy-dd-MM").parse(datum);
+            return (dateInOneWeek.getTime() - date.getTime() > 0);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Datum ist illegal!");
+        }
+    }
+
+    public static boolean checkDateIsInFuture(String datum) {
+        Date date;
+        try {
+            date = new SimpleDateFormat("yyyy-dd-MM").parse(datum);
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            Date todayWithZeroTime = formatter.parse(formatter.format(new Date()));
+            return (todayWithZeroTime.before(date) || todayWithZeroTime.equals(date));
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Datum ist illegal!");
+        }
+    }
 
 }

@@ -3,6 +3,7 @@ package de.unipassau.fim.projekt40;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.EventType;
 
+import de.unipassau.fim.projekt40.data_access_layer.repository.EventRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.SpringApplication;
 
@@ -89,9 +90,47 @@ public class Start {
         while ((event = input.readLine()) != null
                 && !event.equals("quit")){
             String[] attributes = event.split("\\s+");
-            Event tmp = new Event(attributes[0], attributes[1],
-                    attributes[2], attributes[3], attributes[4]);
-            events.add(tmp);
+            if (checkAttributes(attributes)) {
+                Event tmp = new Event(attributes[0], attributes[1],
+                        attributes[2], attributes[3], attributes[4]);
+                events.add(tmp);
+            } else {
+                System.out.println("Die Parameter des Events passen nicht," +
+                        " evtl liegt das Datum nicht in der Zukunft!");
+            }
         }
+    }
+
+    private static boolean checkAttributes(String[] attributes) {
+        if (attributes.length == 5) {
+            boolean isDateLegalAndinFuture;
+            try {
+                isDateLegalAndinFuture = EventRepository.checkDateIsInFuture(attributes[2]);
+            } catch (IllegalArgumentException e) {
+                isDateLegalAndinFuture = false;
+            }
+
+            return (checkNameIsUnique(attributes[0]) && isDateLegalAndinFuture
+                    && checkEventTypeExists(attributes[4]));
+        }
+        return false;
+    }
+
+    private static boolean checkNameIsUnique(String name) {
+        for (Event event: events) {
+            if (event.getVer_name().equals(name)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkEventTypeExists(String eventType) {
+        for (EventType tmp: eventTypes) {
+            if (tmp.getName().equals(eventType)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
