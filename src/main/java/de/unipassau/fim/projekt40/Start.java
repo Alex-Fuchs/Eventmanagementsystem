@@ -2,8 +2,8 @@ package de.unipassau.fim.projekt40;
 
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.EventType;
-
 import de.unipassau.fim.projekt40.data_access_layer.repository.EventRepository;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.SpringApplication;
 

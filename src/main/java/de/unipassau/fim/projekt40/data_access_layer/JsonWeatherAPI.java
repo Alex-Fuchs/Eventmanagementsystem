@@ -24,7 +24,7 @@ public class JsonWeatherAPI
 
     public static String getWeather(String id, String datum) {
         String[] zahl = datum.split("-");
-        datum = zahl[0] + "/" + zahl[1] + "/" + zahl[2];
+        datum = zahl[0] + "/" + zahl[2] + "/" + zahl[1];
         try {
             String inline = useAPI("https://www.metaweather.com/api/location/" + id + "/" + datum);
             if (!inline.equals("[]")) {
@@ -54,8 +54,9 @@ public class JsonWeatherAPI
                 inline += sc.nextLine();
             }
             sc.close();
+            return inline;
         }
         conn.disconnect();
-        return inline;
+        return "[]";
     }
 }

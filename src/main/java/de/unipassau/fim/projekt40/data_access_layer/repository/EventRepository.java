@@ -3,6 +3,7 @@ package de.unipassau.fim.projekt40.data_access_layer.repository;
 import de.unipassau.fim.projekt40.Start;
 import de.unipassau.fim.projekt40.data_access_layer.JsonWeatherAPI;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,7 +13,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Repository
 public class EventRepository {
@@ -66,12 +73,19 @@ public class EventRepository {
                 new Object[] { id }, new VeranstaltungRowMapper());
     }
 
+    public Event findByExactName(String name) {
+        return jdbcTemplate.queryForObject("SELECT * FROM Event WHERE VER_NAME =? ",
+                new Object[] { name }, new VeranstaltungRowMapper());
+    }
+
     public int insert(Event vera) {
-        return jdbcTemplate.update("insert into Event " +
+        int code = jdbcTemplate.update("insert into Event " +
                         "(id, ver_name, place, datum, description, eventType, rank, weather) "
                         + "values(?,  ?, ?, ?, ?,?, ?, ?)",
                 vera.getId(), vera.getVer_name(), vera.getPlace(), vera.getDatum(), vera.getDescription(),
                 vera.getEventType(), vera.getRank(), vera.getWeather());
+        updateWeatherOfEvent(findByExactName(vera.getVer_name()));
+        return code;
     }
 
     private int deleteAll() {
@@ -106,29 +120,33 @@ public class EventRepository {
         timer.schedule(new TimerTask() {
             public void run() {
                 System.out.println("UpdateWeatherTask is running at " + date
-                        + " with intervall of 1 hour");
+                        + " with intervall of 1 minute");
                 updateWeather();
             }
-        }, date, 60 * 60 * 1000);
+        }, date, 60 * 1000);
     }
 
     private void updateWeather() {
         List <Event> events = findAllSort();
-        for (Event Event : events) {
-            if (datumIsInOneWeek(Event.getDatum())) {
-                String id = JsonWeatherAPI.getWoeid(Event.getPlace());
-                String weather;
-                if (id != null && (weather = JsonWeatherAPI.getWeather(id, Event.getDatum())) != null) {
-                    Event.setWeather(weather);
-                    updateWetterValue(Event.getId(), weather);
-                } else {
-                    Event.setWeather("Ort nicht vorhanden");
-                    updateWetterValue(Event.getId(), "Ort nicht vorhanden");
-                }
+        for (Event event : events) {
+            updateWeatherOfEvent(event);
+        }
+    }
+
+    private void updateWeatherOfEvent(Event event) {
+        if (datumIsInOneWeek(event.getDatum())) {
+            String id = JsonWeatherAPI.getWoeid(event.getPlace());
+            String weather;
+            if (id != null && (weather = JsonWeatherAPI.getWeather(id, event.getDatum())) != null) {
+                event.setWeather(weather);
+                updateWetterValue(event.getId(), weather);
             } else {
-                Event.setWeather("Zu weit entfernt");
-                updateWetterValue(Event.getId(), "Zu weit entfernt");
+                event.setWeather("Ort nicht vorhanden");
+                updateWetterValue(event.getId(), "Ort nicht vorhanden");
             }
+        } else {
+            event.setWeather("Zu weit entfernt");
+            updateWetterValue(event.getId(), "Zu weit entfernt");
         }
     }
 

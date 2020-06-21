@@ -1,7 +1,5 @@
 package de.unipassau.fim.projekt40.data_access_layer.data_access_object;
 
-import javax.persistence.Entity;
-
 public class EventType {
 
     private String name;

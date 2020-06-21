@@ -3510,3 +3510,7 @@ Column "ort" not found [42122-200]
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "EVENTTYPE[*] SELECT * FROM EVENT"; erwartet "EXPLAIN, EXECUTE"
 Syntax error in SQL statement "EVENTTYPE[*] SELECT * FROM EVENT"; expected "EXPLAIN, EXECUTE"; SQL statement:
 EVENTTYPE SELECT * FROM EVENT [42001-200]
+2020-06-21 18:41:17 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "EVENTTYPE[*] SELECT * FROM EVENT"; erwartet "EXPLAIN, EXECUTE"
+Syntax error in SQL statement "EVENTTYPE[*] SELECT * FROM EVENT"; expected "EXPLAIN, EXECUTE"; SQL statement:
+EVENTTYPE SELECT * FROM EVENT [42001-200]

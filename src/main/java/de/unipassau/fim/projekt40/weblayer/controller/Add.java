@@ -1,12 +1,10 @@
 package de.unipassau.fim.projekt40.weblayer.controller;
 
-
-
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.EventType;
-
 import de.unipassau.fim.projekt40.data_access_layer.repository.EventRepository;
 import de.unipassau.fim.projekt40.data_access_layer.repository.EventTypeRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,20 +24,41 @@ class Add {
         this.eventTypeRepository = eventTypeRepository;
     }
 
-
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "addVer")
     @ResponseBody
     public String getQuery (@RequestParam String name, @RequestParam String place, @RequestParam String description,
                             @RequestParam String eventType, @RequestParam String datum) {
+        String checkOfDatum = checkDatum(datum);
         String checkOfName = checkName(name);
         String checkOfEventType = checkEventType(eventType);
-        if (checkOfName != null) {
+        if (checkOfDatum != null) {
+            return checkOfDatum;
+        } else if (checkOfName != null) {
             return checkOfName;
         } else if (checkOfEventType != null){
             return checkOfEventType;
         } else {
             return insert(name, place, datum, description, eventType);
         }
+    }
+
+    private String checkDatum(String datum) {
+        try {
+            if (!EventRepository.checkDateIsInFuture(datum)) {
+                return  "\"<script LANGUAGE='JavaScript'>\n" +
+                        "    window.alert('Das Datum liegt in der Vergangenheit');\n" +
+                        "    window.location.href='/add';\n" +
+                        "    </script>\"" +
+                        "Das Datum liegt in der Vergangenheit";
+            }
+        } catch (IllegalArgumentException e) {
+            return  "\"<script LANGUAGE='JavaScript'>\n" +
+                    "    window.alert('Das Datum ist illegal!');\n" +
+                    "    window.location.href='/add';\n" +
+                    "    </script>\"" +
+                    "Das Datum ist illegal!";
+        }
+        return null;
     }
 
     private String checkName(String name) {
