@@ -14,12 +14,25 @@
 <div class="main">
     <table>
         <thead>
-            <th>
-                <form action="search" method="post">
-                    <input type="text" placeholder="Suche nach Veranstaltungen" name="entry">
-                    <input type="submit" value="Suchen">
-                </form>
-            </th>
+        <th>
+            <form action="sort" method="post">
+                <label>
+                    <select name="sort">
+                        <option th:each="eventType : ${eventTypes}"
+                                th:value="${eventType.name}"
+                                th:text="${eventType.name}">
+                        </option>
+                    </select>
+                </label>
+                <input type="submit" value="anzeigen">
+            </form>
+        </th>
+        <th>
+            <form action="search" method="post">
+                <input type="text" placeholder="Suche nach Veranstaltungen" name="entry">
+                <input type="submit" value="Suchen">
+            </form>
+        </th>
         </thead>
     </table>
     <br><br><br>

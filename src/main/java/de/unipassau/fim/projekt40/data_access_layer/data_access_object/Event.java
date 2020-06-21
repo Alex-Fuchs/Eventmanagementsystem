@@ -3,10 +3,9 @@ package de.unipassau.fim.projekt40.data_access_layer.data_access_object;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
 public class Event implements Comparable<Event> {
 
-    @Id
+
     private Long id;
     private String ver_name;
     private String place;
