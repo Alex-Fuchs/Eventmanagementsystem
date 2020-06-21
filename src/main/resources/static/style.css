@@ -1,5 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
 
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+
 h1 {
     font-size: 30px;
     color: #fff;
@@ -108,4 +110,26 @@ section {
 .main {
     margin-left: 20%;
     padding: 0 10px;
+}
+
+.first {
+    background-color: white;
+}
+
+.second {
+    background-color: #818181;
+}
+
+.event {
+    background-color: white;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidenav {
+        padding-top: 15px;
+    }
+    .sidenav a {
+        font-size: 18px;
+    }
 }
