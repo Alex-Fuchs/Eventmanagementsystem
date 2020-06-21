@@ -1,0 +1,97 @@
+package de.unipassau.fim.projekt40;
+
+import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
+import de.unipassau.fim.projekt40.data_access_layer.data_access_object.EventType;
+
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@SpringBootApplication
+public class Start {
+
+    private static List<EventType> eventTypes = new ArrayList<>();
+    private static List<Event> events = new ArrayList<>();
+    private static boolean newStart;
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader
+                = new BufferedReader(new InputStreamReader(System.in));
+        if ((newStart = checkNewInitialisation(bufferedReader))) {
+            setEventTypes(bufferedReader);
+            setInitialisingEvents(bufferedReader);
+        }
+        SpringApplication.run(Start.class, args);
+    }
+
+    public Start() { }
+
+    public static List<EventType> getEventTypes() {
+        return eventTypes;
+    }
+
+    public static List<Event> getEvents() {
+        return events;
+    }
+
+    public static boolean isNewStart() {
+        return newStart;
+    }
+
+    private static boolean checkNewInitialisation(BufferedReader input) throws IOException {
+        String answer;
+        System.out.println("Soll die Datenbank neu intitalisiert werden (y/n)?");
+        if ((answer = input.readLine()) != null) {
+            if (answer.equals("y")) {
+                return true;
+            } else if (answer.equals("n")) {
+                return false;
+            }
+        }
+        return checkNewInitialisation(input);
+    }
+
+    private static void setEventTypes(BufferedReader input) throws IOException {
+        String eventType;
+        System.out.println("Geben Sie mind. einen gewünschten EventTypen" +
+                " für die Veranstaltungen an.");
+        System.out.println("Bestätigen Sie jeweils mit Enter und geben Sie" +
+                " \"Quit\" ein um zu vollenden");
+        while ((eventType = input.readLine()) != null
+                && !eventType.equals("quit")) {
+            if (!eventType.equals("")) {
+                EventType tmp = new EventType(eventType);
+                eventTypes.add(tmp);
+            } else {
+                System.out.println("EventType hat keinen Namen!");
+            }
+        }
+
+        if (eventTypes.size() == 0) {
+            System.out.println("Es wird mind. ein EventTyp benötigt!");
+            setEventTypes(input);
+        }
+    }
+
+    private static void setInitialisingEvents(BufferedReader input) throws IOException {
+        String event;
+        System.out.println("Geben Sie die gewünschten vorinitalisierten Events ein");
+        System.out.println("Geben sie das Event wie folgt ein: <Name> <Ort>" +
+                " <YYYY-DD-MM> <Beschreibung> <EventTyp>");
+        System.out.println("Bestätigen Sie jeweils mit Enter und geben Sie" +
+                " \"Quit\" ein um zu vollenden");
+        while ((event = input.readLine()) != null
+                && !event.equals("quit")){
+            String[] attributes = event.split("\\s+");
+            Event tmp = new Event(attributes[0], attributes[1],
+                    attributes[2], attributes[3], attributes[4]);
+            events.add(tmp);
+        }
+    }
+}
