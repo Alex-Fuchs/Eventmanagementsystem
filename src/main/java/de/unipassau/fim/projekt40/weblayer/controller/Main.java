@@ -29,8 +29,8 @@ public class Main {
     }
 
     @GetMapping()
-    public String showAll(Model model) {
-        setEventTypes(model);
+    public String showAll(HttpServletRequest request, Model model) {
+        doPreparations(request, eventRepository.findAllSort(), model);
         return "index";
     }
 
@@ -41,15 +41,50 @@ public class Main {
     }
 
     @GetMapping("event")
-    public String showEvent(Model model) {
-        setEventTypes(model);
+    public String showEvent(HttpServletRequest request, Model model, @RequestParam String id) {
+        List<Event> events = new ArrayList<>();
+        events.add(eventRepository.findById(Integer.parseInt(id)));
+        doPreparations(request, events, model);
         return "event";
+    }
+
+    @GetMapping("search")
+    public String showAllWithSearch(HttpServletRequest request, Model model, @RequestParam String entry) {
+        List<Event> searchedEvents = new ArrayList<>();
+        for (Event Event : eventRepository.findAllSort()) {
+            if (Event.getVer_name().toLowerCase().contains(entry.toLowerCase()) ||
+                    Event.getPlace().toLowerCase().contains(entry.toLowerCase())) {
+                searchedEvents.add(Event);
+            }
+        }
+        doPreparations(request, searchedEvents, model);
+        return "index";
+    }
+
+    @GetMapping("sort")
+    public String ShowAllWithEventType(HttpServletRequest request, Model model, @RequestParam String sort) {
+        List<Event> events;
+        if (sort.equals("Alle (auch Vergangenheit)")) {
+            events = eventRepository.findAllSort();
+        } else {
+            events = eventRepository.findByEventType(sort);
+        }
+        doPreparations(request, events, model);
+        return "index";
     }
 
     private void setEventTypes(Model model) {
         List<EventType> eventTypes = eventTypeRepository.findAll();
         eventTypes.add(0, new EventType("Alle (auch Vergangenheit)"));
         model.addAttribute("eventTypes", eventTypes);
+    }
+
+    private void doPreparations(HttpServletRequest request, List<Event> events, Model model) {
+        getLast20(events);
+        setEventTypes(model);
+
+        model.addAttribute("top3", getTop3());
+        model.addAttribute("events", events);
     }
 
     private List<Event> getTop3() {
