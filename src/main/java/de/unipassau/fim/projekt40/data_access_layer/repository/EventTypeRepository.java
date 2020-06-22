@@ -27,12 +27,13 @@ public class EventTypeRepository {
         if (Start.isNewStart()) {
             deleteAll();
             fetchEventTypes();
+        } else if (Start.isAddingEventTypes()) {
+            fetchEventTypes();
         }
     }
 
     private void fetchEventTypes() {
-        List<EventType> eventTypes = Start.getEventTypes();
-        for (EventType eventType: eventTypes) {
+        for (EventType eventType: Start.getEventTypes()) {
             insert(eventType);
         }
     }
@@ -60,25 +61,20 @@ public class EventTypeRepository {
     }
 
     private int insert(EventType eventType) {
-        if (checkAttributes(eventType)) {
-            formatAttributes(eventType);
-            return jdbcTemplate.update("insert into EventType " +
-                    "(ver_name) " + "values(?)", eventType.getName());
+        if (eventType != null && eventType.getName() != null
+            && !eventType.getName().equals("")) {
+            eventType.setName(eventType.getName().substring(0, 1).toUpperCase()
+                    + eventType.getName().substring(1));
+            if (findByName(eventType.getName()) == null) {
+                return jdbcTemplate.update("insert into EventType " +
+                        "(ver_name) " + "values(?)", eventType.getName());
+            }
         }
         return -1;
     }
 
     private int deleteAll() {
         return jdbcTemplate.update( "delete from EventType");
-    }
-
-    private void formatAttributes(EventType eventType) {
-        eventType.setName(eventType.getName().substring(0, 1).toUpperCase()
-                + eventType.getName().substring(1));
-    }
-
-    private boolean checkAttributes(EventType eventType) {
-        return eventType.getName() != null && !eventType.getName().equals("");
     }
 }
 

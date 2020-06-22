@@ -27,12 +27,10 @@ import java.util.TimerTask;
 public class EventRepository {
 
     private JdbcTemplate jdbcTemplate;
-    private EventTypeRepository eventTypeRepository;
 
     @Autowired
-    public EventRepository(JdbcTemplate jdbcTemplate, EventTypeRepository eventTypeRepository) {
+    public EventRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.eventTypeRepository = eventTypeRepository;
         if (Start.isNewStart()) {
             deleteAll();
             fetchEvents();
@@ -125,15 +123,14 @@ public class EventRepository {
                 "        WHERE id = ?", rank, id);
     }
 
-    private int updateWetterValue(Long id , String data) {
+    private int updateWeather(Long id , String data) {
         return jdbcTemplate.update("UPDATE Event\n" +
                 "        SET weather = ?\n" +
                 "        WHERE id = ?", data, id);
     }
 
     private void fetchEvents() {
-        List<Event> events = Start.getEvents();
-        for (Event event: events) {
+        for (Event event: Start.getEvents()) {
             insert(event);
         }
     }
@@ -163,14 +160,14 @@ public class EventRepository {
             String weather;
             if (id != null && (weather = JsonWeatherAPI.getWeather(id, event.getDatum())) != null) {
                 event.setWeather(weather);
-                updateWetterValue(event.getId(), weather);
+                updateWeather(event.getId(), weather);
             } else {
                 event.setWeather("Ort nicht vorhanden");
-                updateWetterValue(event.getId(), "Ort nicht vorhanden");
+                updateWeather(event.getId(), "Ort nicht vorhanden");
             }
         } else {
             event.setWeather("Zu weit entfernt");
-            updateWetterValue(event.getId(), "Zu weit entfernt");
+            updateWeather(event.getId(), "Zu weit entfernt");
         }
     }
 
@@ -201,12 +198,12 @@ public class EventRepository {
     }
 
     private void formatAttributes(Event vera) {
-        vera.setDescription(vera.getDescription().substring(0, 1).toUpperCase()
-                + vera.getDescription().substring(1));
-        vera.setPlace(vera.getPlace().substring(0, 1).toUpperCase()
-                + vera.getPlace().substring(1));
         vera.setVer_name(vera.getVer_name().substring(0, 1).toUpperCase()
                 + vera.getVer_name().substring(1));
+        vera.setPlace(vera.getPlace().substring(0, 1).toUpperCase()
+                + vera.getPlace().substring(1));
+        vera.setDescription(vera.getDescription().substring(0, 1).toUpperCase()
+                + vera.getDescription().substring(1));
     }
 
     private boolean checkAttributes(Event vera) {
@@ -214,6 +211,7 @@ public class EventRepository {
                 && vera.getPlace() != null && !vera.getPlace().equals("")
                 && vera.getDescription() != null && !vera.getDescription().equals("")
                 && checkDateIsInFuture(vera.getDatum())
-                && eventTypeRepository.findByName(vera.getEventType()) != null;
+                && findByName(vera.getVer_name().substring(0, 1).toUpperCase()
+                + vera.getVer_name().substring(1)) == null;
     }
 }
