@@ -1,10 +1,9 @@
 package de.unipassau.fim.projekt40.web_layer.controller;
 
-import de.unipassau.fim.projekt40.data_access_layer.data_access_object.EventType;
 import de.unipassau.fim.projekt40.data_access_layer.repository.EventRepository;
 import de.unipassau.fim.projekt40.service_layer.EventService;
-
 import de.unipassau.fim.projekt40.service_layer.EventTypeService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +30,10 @@ class Add {
         String checkOfDatum = checkDatum(datum);
         String checkOfName = checkName(name);
         String checkOfEventType = checkEventType(eventType);
-        if (checkOfDatum != null) {
+        String checkNothingIsEmpty = checkNothingIsEmpty(name, place, description);
+        if (checkNothingIsEmpty != null) {
+            return checkNothingIsEmpty;
+        } else if (checkOfDatum != null) {
             return checkOfDatum;
         } else if (checkOfName != null) {
             return checkOfName;
@@ -73,12 +75,23 @@ class Add {
     }
 
     private String checkEventType(String eventTypeName) {
-        if (eventTypeService.eventTypeExists(eventTypeName)) {
+        if (!eventTypeService.eventTypeExists(eventTypeName)) {
             return "\"<script LANGUAGE='JavaScript'>\n" +
                     "    window.alert('Eventtyp ist nicht vorhanden!');\n" +
                     "    window.location.href='/add';\n" +
                     "    </script>\"" +
                     "Eventtyp ist nicht vorhanden!";
+        }
+        return null;
+    }
+
+    private String checkNothingIsEmpty(String name, String place, String description) {
+        if (name.isEmpty() || place.isEmpty() || description.isEmpty()) {
+            return "\"<script LANGUAGE='JavaScript'>\n" +
+                    "    window.alert('Manche Felder sind leer!');\n" +
+                    "    window.location.href='/add';\n" +
+                    "    </script>\"" +
+                    "Manche Felder sind leer!";
         }
         return null;
     }
@@ -93,4 +106,6 @@ class Add {
                 "</div>" +
                 "Die Veranstaltung wurde erfolgreich hinzugefügt";
     }
+
+
 }

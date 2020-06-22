@@ -5,6 +5,7 @@ import de.unipassau.fim.projekt40.data_access_layer.JsonWeatherAPI;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -70,7 +71,7 @@ public class EventRepository {
                 "select * from Event", new VeranstaltungRowMapper()));
     }
 
-    public List <Event> findByEventType(String eventType) {
+    public List<Event> findByEventType(String eventType) {
         List<Event> old = jdbcTemplate.query("SELECT * FROM Event WHERE eventType =? ",
                 new Object[] { eventType }, new VeranstaltungRowMapper());
         old.sort(Comparator.comparing(Event::getRankingInt).reversed());
@@ -78,13 +79,21 @@ public class EventRepository {
     }
 
     public Event findById(long id) {
-        return jdbcTemplate.queryForObject("select * from Event where id=?",
-                new Object[] { id }, new VeranstaltungRowMapper());
+        try {
+            return jdbcTemplate.queryForObject("select * from Event where id=?",
+                    new Object[]{id}, new VeranstaltungRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public Event findByName(String name) {
-        return jdbcTemplate.queryForObject("SELECT * FROM Event WHERE VER_NAME =? ",
-                new Object[] { name }, new VeranstaltungRowMapper());
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM Event WHERE VER_NAME =? ",
+                    new Object[] { name }, new VeranstaltungRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public int insert(Event vera) {

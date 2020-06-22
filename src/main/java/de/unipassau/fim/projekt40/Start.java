@@ -111,7 +111,7 @@ public class Start {
             }
 
             return (checkNameIsUnique(attributes[0]) && isDateLegalAndinFuture
-                    && checkEventTypeExists(attributes[4]));
+                    && checkEventTypeExists(attributes[4]) && checkNothingIsEmpty(attributes));
         }
         return false;
     }
@@ -119,6 +119,15 @@ public class Start {
     private static boolean checkNameIsUnique(String name) {
         for (Event event: events) {
             if (event.getVer_name().equals(name)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkNothingIsEmpty(String[] attributes) {
+        for (String string: attributes) {
+            if (string.equals("")) {
                 return false;
             }
         }

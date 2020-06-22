@@ -23,10 +23,6 @@ public class RestApi {
     @GetMapping("events")
     @ResponseBody
     public String json(@RequestParam String sizeString) {
-        try {
-            return new Gson().toJson(eventService.getLastN(Integer.parseInt(sizeString)));
-        } catch (IllegalArgumentException e) {
-            return "[]";
-        }
+        return new Gson().toJson(eventService.getLastN(Integer.parseInt(sizeString)));
     }
 }

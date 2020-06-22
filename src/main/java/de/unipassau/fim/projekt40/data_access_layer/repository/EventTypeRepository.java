@@ -4,6 +4,7 @@ import de.unipassau.fim.projekt40.Start;
 import de.unipassau.fim.projekt40.data_access_layer.data_access_object.EventType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -50,8 +51,12 @@ public class EventTypeRepository {
     }
 
     public EventType findByName(String name) {
-        return jdbcTemplate.queryForObject("select * from EventType WHERE NAME =?",
-                new Object[] { name }, new VeranstaltungRowMapper());
+        try {
+            return jdbcTemplate.queryForObject("select * from EventType WHERE VER_NAME =?",
+                    new Object[] { name }, new VeranstaltungRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     private int insert(EventType eventType) {

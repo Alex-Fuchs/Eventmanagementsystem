@@ -2,7 +2,9 @@ package de.unipassau.fim.projekt40.data_access_layer;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 import java.io.IOException;
+
 import java.util.Scanner;
 
 public class JsonWeatherAPI
@@ -54,6 +56,7 @@ public class JsonWeatherAPI
                 inline += sc.nextLine();
             }
             sc.close();
+            conn.disconnect();
             return inline;
         }
         conn.disconnect();

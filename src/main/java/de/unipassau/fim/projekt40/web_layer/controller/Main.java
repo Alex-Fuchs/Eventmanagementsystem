@@ -1,8 +1,8 @@
 package de.unipassau.fim.projekt40.web_layer.controller;
 
-import de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event;
 import de.unipassau.fim.projekt40.service_layer.EventService;
 import de.unipassau.fim.projekt40.service_layer.EventTypeService;
+import de.unipassau.fim.projekt40.web_layer.model.EventDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -59,6 +59,7 @@ class Main {
     @PostMapping("vote")
     @ResponseBody
     public String vote (HttpServletRequest request, HttpServletResponse response, @RequestParam String id, @RequestParam String ranking) {
+        Long.parseLong(id);
         int value = Integer.parseInt(ranking);
         if (Math.abs(value) == 1) {
             int oldVoting = getOldVoting(request, id);
@@ -85,13 +86,11 @@ class Main {
 
     @GetMapping("event")
     public String showEvent(HttpServletRequest request, Model model, @RequestParam String id) {
-        List<Event> events = new ArrayList<>();
-        events.add(eventService.getEventById(Integer.parseInt(id)));
-        doPreparations(request, events, model);
+        doPreparations(request, eventService.getEventById(Integer.parseInt(id)), model);
         return "event";
     }
 
-    private void doPreparations(HttpServletRequest request, List<Event> events, Model model) {
+    private void doPreparations(HttpServletRequest request, List<EventDto> events, Model model) {
         ArrayList<Long> upVote = new ArrayList<>();
         ArrayList<Long> downVote = new ArrayList<>();
         setUpDownVoteLists(request, upVote, downVote);
