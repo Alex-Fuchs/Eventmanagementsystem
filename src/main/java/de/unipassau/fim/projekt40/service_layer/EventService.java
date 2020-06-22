@@ -76,6 +76,7 @@ public class EventService {
     }
 
     public boolean isEventNameAlreadyUsed(String name) {
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
         return (eventRepository.findByName(name) != null);
     }
 

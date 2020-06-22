@@ -84,7 +84,7 @@ public class Start {
         String event;
         System.out.println("Geben Sie die gewünschten vorinitalisierten Events ein");
         System.out.println("Geben sie das Event wie folgt ein: <Name> <Ort>" +
-                " <YYYY-DD-MM> <Beschreibung> <EventTyp>");
+                " <YYYY-MM-DD> <Beschreibung> <EventTyp>");
         System.out.println("Bestätigen Sie jeweils mit Enter und geben Sie" +
                 " \"quit\" ein um zu vollenden");
         while ((event = input.readLine()) != null
@@ -102,21 +102,22 @@ public class Start {
     }
 
     private static boolean checkAttributes(String[] attributes) {
-        if (attributes.length == 5) {
-            boolean isDateLegalAndinFuture;
+        if (attributes.length == 5 && checkNothingIsEmpty(attributes)) {
+            boolean isDateLegalAndInFuture;
             try {
-                isDateLegalAndinFuture = EventRepository.checkDateIsInFuture(attributes[2]);
+                isDateLegalAndInFuture = EventRepository.checkDateIsInFuture(attributes[2]);
             } catch (IllegalArgumentException e) {
-                isDateLegalAndinFuture = false;
+                isDateLegalAndInFuture = false;
             }
 
-            return (checkNameIsUnique(attributes[0]) && isDateLegalAndinFuture
-                    && checkEventTypeExists(attributes[4]) && checkNothingIsEmpty(attributes));
+            return (checkNameIsUnique(attributes[0]) && isDateLegalAndInFuture
+                    && checkEventTypeExists(attributes[4]));
         }
         return false;
     }
 
     private static boolean checkNameIsUnique(String name) {
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
         for (Event event: events) {
             if (event.getVer_name().equals(name)) {
                 return false;

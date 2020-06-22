@@ -97,6 +97,7 @@ public class EventRepository {
     }
 
     public int insert(Event vera) {
+        formatAttributes(vera);
         int code = jdbcTemplate.update("insert into Event " +
                         "(id, ver_name, place, datum, description, eventType, rank, weather) "
                         + "values(?,  ?, ?, ?, ?,?, ?, ?)",
@@ -172,7 +173,7 @@ public class EventRepository {
         Date dateInOneWeek = new Date(new Date().getTime()
                 + 1000 * 60 * 60 * 24 * 7);
         try {
-            Date date = new SimpleDateFormat("yyyy-dd-MM").parse(datum);
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(datum);
             return (dateInOneWeek.getTime() - date.getTime() > 0);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Datum ist illegal!");
@@ -180,14 +181,26 @@ public class EventRepository {
     }
 
     public static boolean checkDateIsInFuture(String datum) {
-        Date date;
-        try {
-            date = new SimpleDateFormat("yyyy-dd-MM").parse(datum);
+        if (datum.matches("^2[0-9]{3}-(0[1-9]||1[0-2])-(0[1-9]||[1-2][0-9]||3[0-1])$")) {
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            Date todayWithZeroTime = formatter.parse(formatter.format(new Date()));
-            return (todayWithZeroTime.before(date) || todayWithZeroTime.equals(date));
-        } catch (ParseException e) {
+            try {
+                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(datum);
+                Date todayWithZeroTime = formatter.parse(formatter.format(new Date()));
+                return (todayWithZeroTime.before(date) || todayWithZeroTime.equals(date));
+            } catch (ParseException e) {
+                throw new IllegalArgumentException("Datum ist illegal!");
+            }
+        } else {
             throw new IllegalArgumentException("Datum ist illegal!");
         }
+    }
+
+    private void formatAttributes(Event vera) {
+        vera.setDescription(vera.getDescription().substring(0, 1).toUpperCase()
+                + vera.getDescription().substring(1));
+        vera.setPlace(vera.getPlace().substring(0, 1).toUpperCase()
+                + vera.getPlace().substring(1));
+        vera.setVer_name(vera.getVer_name().substring(0, 1).toUpperCase()
+                + vera.getVer_name().substring(1));
     }
 }

@@ -26,7 +26,7 @@ public class JsonWeatherAPI
 
     public static String getWeather(String id, String datum) {
         String[] zahl = datum.split("-");
-        datum = zahl[0] + "/" + zahl[2] + "/" + zahl[1];
+        datum = zahl[0] + "/" + zahl[1] + "/" + zahl[2];
         try {
             String inline = useAPI("https://www.metaweather.com/api/location/" + id + "/" + datum);
             if (!inline.equals("[]")) {
@@ -34,7 +34,7 @@ public class JsonWeatherAPI
                 String[] erg = words[1].split(":");
                 return erg[1];
             } else {
-                return "Wetter außerhalb Zeitraum";
+                return "Kurzzeitige Störung";
             }
         } catch (IOException e) {
             e.printStackTrace();
