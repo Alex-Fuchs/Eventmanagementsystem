@@ -11,33 +11,37 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @SpringBootApplication
 public class Start {
 
-    private static List<EventType> eventTypes = new ArrayList<>();
-    private static List<Event> events = new ArrayList<>();
+    private static Set<EventType> eventTypes = new HashSet<>();
+    private static Set<Event> events = new HashSet<>();
     private static boolean newStart;
+    private static boolean newEventTypes;
 
     public static void main(String[] args) throws IOException {
         BufferedReader bufferedReader
                 = new BufferedReader(new InputStreamReader(System.in));
-        if ((newStart = checkNewInitialisation(bufferedReader))) {
+        initialising(bufferedReader);
+        if (newStart) {
             setEventTypes(bufferedReader);
             setInitialisingEvents(bufferedReader);
+        } else if (newEventTypes) {
+            setEventTypes(bufferedReader);
         }
         SpringApplication.run(Start.class, args);
     }
 
     public Start() { }
 
-    public static List<EventType> getEventTypes() {
+    public static Set<EventType> getEventTypes() {
         return eventTypes;
     }
 
-    public static List<Event> getEvents() {
+    public static Set<Event> getEvents() {
         return events;
     }
 
@@ -45,32 +49,48 @@ public class Start {
         return newStart;
     }
 
-    private static boolean checkNewInitialisation(BufferedReader input) throws IOException {
+    public static boolean isAddingEventTypes() {
+        return newEventTypes;
+    }
+
+    private static void initialising(BufferedReader input) throws IOException {
         String answer;
-        System.out.println("Soll die Datenbank neu intitalisiert werden (y/n)?");
+        System.out.println("Soll die Datenbank neu intitalisiert werden (1) oder "
+                + "sollen neue EventTypen hinzugefügt werden (2) " +
+                "oder nichts verändert werden (3) -> (1/2/3)?");
         if ((answer = input.readLine()) != null) {
-            if (answer.equals("y")) {
-                return true;
-            } else if (answer.equals("n")) {
-                return false;
+            switch (answer) {
+            case "1":
+                newStart = true;
+                break;
+            case "2":
+                newEventTypes = true;
+                break;
+            case "3":
+                break;
+            default:
+                System.out.println("Eine Antwort ist nötig!");
+                initialising(input);
             }
         }
-        return checkNewInitialisation(input);
     }
 
     private static void setEventTypes(BufferedReader input) throws IOException {
         String eventType;
         System.out.println("Geben Sie mind. einen gewünschten EventTypen" +
                 " für die Veranstaltungen an.");
+        System.out.println("Falls nur EventTypen hinzugefügt werden und nicht die DB" +
+                "neu initialisiert wird, werden nur neue Typen hinzugefügt.");
         System.out.println("Bestätigen Sie jeweils mit Enter und geben Sie" +
                 " \"quit\" ein um zu vollenden");
         while ((eventType = input.readLine()) != null
                 && !eventType.equals("quit")) {
             if (!eventType.equals("")) {
+                eventType = eventType.substring(0, 1).toUpperCase() + eventType.substring(1);
                 EventType tmp = new EventType(eventType);
                 eventTypes.add(tmp);
             } else {
-                System.out.println("EventType hat keinen Namen!");
+                System.out.println("EventTyp hat keinen Namen!");
             }
         }
 
@@ -104,20 +124,31 @@ public class Start {
     private static boolean checkAttributes(String[] attributes) {
         if (attributes.length == 5 && checkNothingIsEmpty(attributes)) {
             boolean isDateLegalAndInFuture;
+            formatAttributes(attributes);
+
             try {
                 isDateLegalAndInFuture = EventRepository.checkDateIsInFuture(attributes[2]);
             } catch (IllegalArgumentException e) {
                 isDateLegalAndInFuture = false;
             }
-
             return (checkNameIsUnique(attributes[0]) && isDateLegalAndInFuture
                     && checkEventTypeExists(attributes[4]));
         }
         return false;
     }
 
+    private static void formatAttributes(String[] attributes) {
+        attributes[0] = attributes[0].substring(0, 1).toUpperCase()
+                + attributes[0].substring(1);
+        attributes[1] = attributes[1].substring(0, 1).toUpperCase()
+                + attributes[1].substring(1);
+        attributes[3] = attributes[3].substring(0, 1).toUpperCase()
+                + attributes[3].substring(1);
+        attributes[4] = attributes[4].substring(0, 1).toUpperCase()
+                + attributes[4].substring(1);
+    }
+
     private static boolean checkNameIsUnique(String name) {
-        name = name.substring(0, 1).toUpperCase() + name.substring(1);
         for (Event event: events) {
             if (event.getVer_name().equals(name)) {
                 return false;
@@ -136,7 +167,6 @@ public class Start {
     }
 
     private static boolean checkEventTypeExists(String eventType) {
-        eventType = eventType.substring(0, 1).toUpperCase() + eventType.substring(1);
         for (EventType tmp: eventTypes) {
             if (tmp.getName().equals(eventType)) {
                 return true;
