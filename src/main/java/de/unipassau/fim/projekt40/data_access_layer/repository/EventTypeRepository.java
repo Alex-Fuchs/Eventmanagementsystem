@@ -60,12 +60,25 @@ public class EventTypeRepository {
     }
 
     private int insert(EventType eventType) {
-        return jdbcTemplate.update("insert into EventType " +
-                        "(ver_name) " + "values(?)", eventType.getName());
+        if (checkAttributes(eventType)) {
+            formatAttributes(eventType);
+            return jdbcTemplate.update("insert into EventType " +
+                    "(ver_name) " + "values(?)", eventType.getName());
+        }
+        return -1;
     }
 
     private int deleteAll() {
         return jdbcTemplate.update( "delete from EventType");
+    }
+
+    private void formatAttributes(EventType eventType) {
+        eventType.setName(eventType.getName().substring(0, 1).toUpperCase()
+                + eventType.getName().substring(1));
+    }
+
+    private boolean checkAttributes(EventType eventType) {
+        return eventType.getName() != null && !eventType.getName().equals("");
     }
 }
 

@@ -136,6 +136,7 @@ public class Start {
     }
 
     private static boolean checkEventTypeExists(String eventType) {
+        eventType = eventType.substring(0, 1).toUpperCase() + eventType.substring(1);
         for (EventType tmp: eventTypes) {
             if (tmp.getName().equals(eventType)) {
                 return true;

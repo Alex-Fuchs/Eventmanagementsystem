@@ -27,10 +27,12 @@ import java.util.TimerTask;
 public class EventRepository {
 
     private JdbcTemplate jdbcTemplate;
+    private EventTypeRepository eventTypeRepository;
 
     @Autowired
-    public EventRepository(JdbcTemplate jdbcTemplate) {
+    public EventRepository(JdbcTemplate jdbcTemplate, EventTypeRepository eventTypeRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.eventTypeRepository = eventTypeRepository;
         if (Start.isNewStart()) {
             deleteAll();
             fetchEvents();
@@ -97,14 +99,17 @@ public class EventRepository {
     }
 
     public int insert(Event vera) {
-        formatAttributes(vera);
-        int code = jdbcTemplate.update("insert into Event " +
-                        "(id, ver_name, place, datum, description, eventType, rank, weather) "
-                        + "values(?,  ?, ?, ?, ?,?, ?, ?)",
-                vera.getId(), vera.getVer_name(), vera.getPlace(), vera.getDatum(), vera.getDescription(),
-                vera.getEventType(), vera.getRank(), vera.getWeather());
-        updateWeatherOfEvent(findByName(vera.getVer_name()));
-        return code;
+        if (checkAttributes(vera)) {
+            formatAttributes(vera);
+            int code = jdbcTemplate.update("insert into Event " +
+                            "(id, ver_name, place, datum, description, eventType, rank, weather) "
+                            + "values(?,  ?, ?, ?, ?,?, ?, ?)",
+                    vera.getId(), vera.getVer_name(), vera.getPlace(), vera.getDatum(), vera.getDescription(),
+                    vera.getEventType(), vera.getRank(), vera.getWeather());
+            updateWeatherOfEvent(findByName(vera.getVer_name()));
+            return code;
+        }
+        return -1;
     }
 
     private int deleteAll() {
@@ -202,5 +207,13 @@ public class EventRepository {
                 + vera.getPlace().substring(1));
         vera.setVer_name(vera.getVer_name().substring(0, 1).toUpperCase()
                 + vera.getVer_name().substring(1));
+    }
+
+    private boolean checkAttributes(Event vera) {
+        return vera.getVer_name() != null && !vera.getVer_name().equals("")
+                && vera.getPlace() != null && !vera.getPlace().equals("")
+                && vera.getDescription() != null && !vera.getDescription().equals("")
+                && checkDateIsInFuture(vera.getDatum())
+                && eventTypeRepository.findByName(vera.getEventType()) != null;
     }
 }
