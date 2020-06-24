@@ -102,7 +102,8 @@ class Main {
         model.addAttribute("upVote", upVote);
         model.addAttribute("downVote", downVote);
         model.addAttribute("top3", eventService.getTop3());
-        model.addAttribute("top3IDs", getTop3IDs());
+        model.addAttribute("top3IDs", eventService.getTop3IDs());
+        model.addAttribute("inFutureIDs", eventService.getInFutureIDs());
         model.addAttribute("events", events);
     }
 
@@ -136,13 +137,5 @@ class Main {
             }
         }
         return 0;
-    }
-
-    private List<Long> getTop3IDs() {
-        List<Long> result = new ArrayList<>();
-        for (EventDto event: eventService.getTop3()) {
-            result.add(event.getId());
-        }
-        return result;
     }
 }

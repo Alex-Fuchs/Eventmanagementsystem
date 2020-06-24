@@ -1,27 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
 
-h1 {
-    font-size: 30px;
-    color: #fff;
-    text-transform: uppercase;
-    font-weight: 300;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
 table {
     table-layout: fixed;
-}
-
-.tbl-header {
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-.tbl-content {
-    height: 300px;
-    overflow-x: auto;
-    margin-top: 0;
-    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 th {
@@ -53,7 +33,6 @@ section {
     margin: 50px;
 }
 
-/* The sidebar menu */
 .sidenav {
     height: 100%;
     width: 20%;
@@ -66,7 +45,6 @@ section {
     padding-top: 20px;
 }
 
-/* The navigation menu links */
 .sidenav a {
     padding: 6px 8px 6px 16px;
     text-decoration: none;
@@ -75,66 +53,15 @@ section {
     display: block;
 }
 
-.centerMe {
-    margin-left: 40px;
-}
-
-.sidenav span {
-    padding: 6px 8px 6px 16px;
-    text-decoration: none;
-    font-size: 20%;
-    color: #818181;
-    display: block;
-}
-
-/* When you mouse over the navigation links, change their color */
 .sidenav a:hover {
     color: #f1f1f1;
 }
 
-/* Style page content */
 .main {
     margin-left: 20%;
     padding: 0 10px;
 }
 
-[class = 'rank 0'] {
-    background: rgb(212, 175, 55);
-}
-
-[class = 'rank 1'] {
-    background: rgb(192, 192, 192);
-}
-
-[class = 'rank 2'] {
-    background: rgb(191, 137, 112);
-}
-
-.notVoted {
-    background-color: white;
-}
-
-.voted {
-    background-color: #B0B0B0;
-}
-
-.showEvent {
-    background-color: white;
-}
-
-.showMore {
-    padding: 20px 0 20px 40px;
-    text-decoration: none;
-    font-size: 20px;
-    color: #000000;
-    display: block;
-}
-
-.showMore:hover {
-    color: #f1f1f1;
-}
-
-/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
     .sidenav {
         padding-top: 15px;

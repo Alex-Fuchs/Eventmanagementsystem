@@ -47,6 +47,13 @@ public class EventService {
         }
     }
 
+    public List<EventDto> getEventById(long id) {
+        Event event = eventRepository.findById(id);
+        List<Event> events = new ArrayList<>();
+        events.add(event);
+        return convertToDtos(events);
+    }
+
     public List<EventDto> getTop3() {
         if (eventRepository.findAllSort().size() <= 3) {
             return convertToDtos(eventRepository.findAllSort());
@@ -54,11 +61,20 @@ public class EventService {
         return convertToDtos(eventRepository.findAllSort().subList(0, 3));
     }
 
-    public List<EventDto> getEventById(long id) {
-        Event event = eventRepository.findById(id);
-        List<Event> events = new ArrayList<>();
-        events.add(event);
-        return convertToDtos(events);
+    public List<Long> getTop3IDs() {
+        List<Long> result = new ArrayList<>();
+        for (EventDto event: getTop3()) {
+            result.add(event.getId());
+        }
+        return result;
+    }
+
+    public List<Long> getInFutureIDs() {
+        List<Long> result = new ArrayList<>();
+        for (Event event: eventRepository.findAllInFuture()) {
+            result.add(event.getId());
+        }
+        return result;
     }
 
     public void vote(long id, int value) {

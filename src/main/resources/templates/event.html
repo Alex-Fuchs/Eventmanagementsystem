@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="events.css">
 </head>
 <body>
 <div class="sidenav">
@@ -65,12 +66,14 @@
         <tr th:if="${events.empty}">
             <td colspan="2"> Leider keine Veranstaltungen vorhanden</td>
         </tr>
-        <tr th:each="event : ${events}" class="rank" th:classappend="${#lists.contains(top3IDs, event.getId())} ? ${top3IDs.indexOf(event.getId())} : notInTop">
+        <tr th:each="event : ${events}"
+            th:attrappend="rank = ${#lists.contains(top3IDs, event.getId())} ? ${'rank' + top3IDs.indexOf(event.getId())} : notInTop">
             <td><span th:text="${event.ver_name}"> Name </span></td>
             <td><span th:text="${event.place}"> Ort </span></td>
             <td><span th:text="${event.description}"> Beschreibung </span></td>
             <td><span th:text="${event.eventType}"> art </span></td>
-            <td><span th:text="${event.datum}"> datum </span></td>
+            <td><span th:text="${event.datum}"
+                      th:attrappend="isInFuture = ${#lists.contains(inFutureIDs, event.getId()) ? 'inFuture' : 'notInFuture'}"> datum </span></td>
             <td><span th:text="${event.weather}" id="wetter"> wetter </span></td>
             <td><span th:text="${event.rank}" id="ranking"> Ranking </span></td>
             <td><form action="vote" method="post">
