@@ -52,7 +52,7 @@ public class EventRepository {
     public List<Event> findAllSort() {
         List<Event> old = new ArrayList<>(jdbcTemplate.query(
                 "select * from Event", new VeranstaltungRowMapper()));
-        old.sort(Comparator.comparing(Event::getRankingInt).reversed());
+        old.sort(Comparator.comparing(Event::getRankInt).reversed());
         return old;
     }
 
@@ -74,7 +74,7 @@ public class EventRepository {
     public List<Event> findByEventType(String eventType) {
         List<Event> old = jdbcTemplate.query("SELECT * FROM Event WHERE eventType =? ",
                 new Object[] { eventType }, new VeranstaltungRowMapper());
-        old.sort(Comparator.comparing(Event::getRankingInt).reversed());
+        old.sort(Comparator.comparing(Event::getRankInt).reversed());
         return old;
     }
 
@@ -116,7 +116,7 @@ public class EventRepository {
 
     public int vote(long id, int vote) {
         Event event = findById(id);
-        int rank = event.getRankingInt() + vote;
+        int rank = event.getRankInt() + vote;
 
         return jdbcTemplate.update("UPDATE Event\n" +
                 "        SET rank = ?" +
@@ -183,14 +183,14 @@ public class EventRepository {
     }
 
     public static boolean checkDateIsInFuture(String datum) {
-        if (datum.matches("^2[0-9]{3}-(0[1-9]||1[0-2])-(0[1-9]||[1-2][0-9]||3[0-1])$")) {
+        if (datum != null && datum.matches("^2[0-9]{3}-(0[1-9]||1[0-2])-(0[1-9]||[1-2][0-9]||3[0-1])$")) {
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             try {
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(datum);
                 Date todayWithZeroTime = formatter.parse(formatter.format(new Date()));
                 return (todayWithZeroTime.before(date) || todayWithZeroTime.equals(date));
             } catch (ParseException e) {
-                throw new IllegalArgumentException("Datum ist illegal!");
+                throw new IllegalArgumentException("Parsing nicht erfolgreich!");
             }
         } else {
             throw new IllegalArgumentException("Datum ist illegal!");
@@ -204,10 +204,12 @@ public class EventRepository {
                 + vera.getPlace().substring(1));
         vera.setDescription(vera.getDescription().substring(0, 1).toUpperCase()
                 + vera.getDescription().substring(1));
+        vera.setEventType(vera.getEventType().substring(0, 1).toUpperCase()
+                + vera.getEventType().substring(1));
     }
 
     private boolean checkAttributes(Event vera) {
-        return vera.getVer_name() != null && !vera.getVer_name().equals("")
+        return vera != null && vera.getVer_name() != null && !vera.getVer_name().equals("")
                 && vera.getPlace() != null && !vera.getPlace().equals("")
                 && vera.getDescription() != null && !vera.getDescription().equals("")
                 && checkDateIsInFuture(vera.getDatum())

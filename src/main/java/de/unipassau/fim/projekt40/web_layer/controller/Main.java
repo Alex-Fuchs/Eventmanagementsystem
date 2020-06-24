@@ -59,7 +59,7 @@ class Main {
     @PostMapping("vote")
     @ResponseBody
     public String vote (HttpServletRequest request, HttpServletResponse response, @RequestParam String id, @RequestParam String ranking) {
-        Long.parseLong(id);
+        long idLong = Long.parseLong(id);
         int value = Integer.parseInt(ranking);
         if (Math.abs(value) == 1) {
             int oldVoting = getOldVoting(request, id);
@@ -70,7 +70,7 @@ class Main {
                 response.addCookie(new Cookie(id, ranking));
                 value += -1 * oldVoting;
             }
-            eventService.vote(Long.parseLong(id), value);
+            eventService.vote(idLong, value);
             return "\"<script LANGUAGE='JavaScript'>\n" +
                     "    window.alert('Vielen Dank für deinen Vote');\n" +
                     "    window.location.href='/';\n" +
@@ -78,10 +78,10 @@ class Main {
                     "Vielen Dank für deinen Vote";
         }
         return "\"<script LANGUAGE='JavaScript'>\n" +
-                "    window.alert('Etwas ist mit der Session schief gelaufen!');\n" +
+                "    window.alert('Etwas ist mit dem Vote schief gelaufen!');\n" +
                 "    window.location.href='/';\n" +
                 "    </script>\"" +
-                "Etwas ist mit der Session schief gelaufen!";
+                "Etwas ist mit dem Vote schief gelaufen!";
     }
 
     @GetMapping("event")
@@ -99,6 +99,7 @@ class Main {
         model.addAttribute("upVote", upVote);
         model.addAttribute("downVote", downVote);
         model.addAttribute("top3", eventService.getTop3());
+        model.addAttribute("top3IDs", getTop3IDs());
         model.addAttribute("events", events);
     }
 
@@ -132,5 +133,13 @@ class Main {
             }
         }
         return 0;
+    }
+
+    private List<Long> getTop3IDs() {
+        List<Long> result = new ArrayList<>();
+        for (EventDto event: eventService.getTop3()) {
+            result.add(event.getId());
+        }
+        return result;
     }
 }

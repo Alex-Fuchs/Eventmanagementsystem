@@ -123,9 +123,8 @@ public class Start {
 
     private static boolean checkAttributes(String[] attributes) {
         if (attributes.length == 5 && checkNothingIsEmpty(attributes)) {
-            boolean isDateLegalAndInFuture;
             formatAttributes(attributes);
-
+            boolean isDateLegalAndInFuture;
             try {
                 isDateLegalAndInFuture = EventRepository.checkDateIsInFuture(attributes[2]);
             } catch (IllegalArgumentException e) {
@@ -157,15 +156,6 @@ public class Start {
         return true;
     }
 
-    private static boolean checkNothingIsEmpty(String[] attributes) {
-        for (String string: attributes) {
-            if (string.equals("")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private static boolean checkEventTypeExists(String eventType) {
         for (EventType tmp: eventTypes) {
             if (tmp.getName().equals(eventType)) {
@@ -173,5 +163,14 @@ public class Start {
             }
         }
         return false;
+    }
+
+    private static boolean checkNothingIsEmpty(String[] attributes) {
+        for (String string: attributes) {
+            if (string.equals("")) {
+                return false;
+            }
+        }
+        return true;
     }
 }

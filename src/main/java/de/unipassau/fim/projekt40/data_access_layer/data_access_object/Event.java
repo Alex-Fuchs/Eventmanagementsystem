@@ -1,6 +1,8 @@
 package de.unipassau.fim.projekt40.data_access_layer.data_access_object;
 
-public class Event implements Comparable<Event> {
+import java.util.Objects;
+
+public class Event {
 
     private Long id;
     private String ver_name;
@@ -94,12 +96,27 @@ public class Event implements Comparable<Event> {
         this.rank = rank;
     }
 
-    public int getRankingInt() {
+    public int getRankInt() {
         return Integer.parseInt(getRank());
     }
 
     @Override
-    public int compareTo(Event o) {
-        return Integer.compare(Integer.parseInt(this.getRank()), Integer.parseInt(o.getRank()));
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(id, event.id) &&
+                Objects.equals(ver_name, event.ver_name) &&
+                Objects.equals(place, event.place) &&
+                Objects.equals(datum, event.datum) &&
+                Objects.equals(description, event.description) &&
+                Objects.equals(eventType, event.eventType) &&
+                Objects.equals(weather, event.weather) &&
+                Objects.equals(rank, event.rank);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, ver_name, place, datum, description, eventType, weather, rank);
     }
 }

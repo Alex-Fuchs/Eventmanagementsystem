@@ -8,8 +8,8 @@ public class EventDto {
     private String datum;
     private String description;
     private String eventType;
-    private String weather = "unbekannt";
-    private String rank = "0";
+    private String weather;
+    private String rank;
 
     public EventDto(Long id, String ver_name, String place, String datum, String description, String eventType, String weather, String rank) {
         this.id = id;

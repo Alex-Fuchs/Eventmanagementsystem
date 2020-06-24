@@ -44,9 +44,9 @@
     <br><br><br>
     <table>
         <thead>
-        <th>Platz 1: GRÜN</th>
-        <th>Platz 2: Orange</th>
-        <th>Platz 3: ROT</th>
+        <th>Platz 1: Gold</th>
+        <th>Platz 2: Silber</th>
+        <th>Platz 3: Bronze</th>
         </thead>
     </table>
     <table >
@@ -63,33 +63,23 @@
         <tr th:if="${events.empty}">
             <td colspan="2"> Leider keine Veranstaltungen vorhanden</td>
         </tr>
-        <tr th:each="event : ${events}" >
+        <tr th:each="event : ${events}" class="rank" th:classappend="${#lists.contains(top3IDs, event.getId())} ? ${top3IDs.indexOf(event.getId())} : notInTop">
             <td><span th:text="${event.ver_name}"> Name </span></td>
             <td><span th:text="${event.description}"> Beschreibung </span></td>
             <td><span th:text="${event.datum}"> datum </span></td>
             <td><form action="vote" method="post">
-                <input type="hidden" th:value="${event.id}" name="id" />
-                <input type="hidden" value="1" name="ranking" />
-                <p th:if="${!#lists.contains(upVote, event.id)}">
-                    <input type="submit" value="       gut       " th:id="${event.id}" class="first">
-                </p>
-                <p th:if="${#lists.contains(upVote, event.id)}">
-                    <input type="submit" value="       gut       " th:id="${event.id}" class="second">
-                </p>
+                    <input type="hidden" th:value="${event.id}" name="id" />
+                    <input type="hidden" value="1" name="ranking" />
+                    <input type="submit" value="         gut          " th:id="${event.id}" th:class="${#lists.contains(upVote, event.id)} ? voted : notVoted">
             </form>
                 <form action="vote" method="post">
                     <input type="hidden" th:value="${event.id}" name="id" />
                     <input type="hidden" value="-1"  name="ranking" />
-                    <p th:if="${!#lists.contains(downVote, event.id)}">
-                        <input type="submit"  value="   schlecht   " th:id="${event.id}" class="first">
-                    </p>
-                    <p th:if="${#lists.contains(downVote, event.id)}">
-                        <input type="submit"  value="   schlecht   " th:id="${event.id}" class="second">
-                    </p>
+                    <input type="submit" value="     schlecht     " th:id="${event.id}" th:class="${#lists.contains(downVote, event.id)} ? voted : notVoted">
                 </form>
             </td>
             <td><form action="event"><input type="hidden" th:value="${event.id}" name="id">
-                <input type=submit value="Mehr anzeigen" class="event" style="width:100%"></form></td>
+                <input type=submit value="Mehr anzeigen" class="showMore" style="width:100%"></form></td>
         </tr>
         <br><br><br>
         </tbody>

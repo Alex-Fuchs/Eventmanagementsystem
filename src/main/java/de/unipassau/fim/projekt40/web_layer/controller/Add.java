@@ -6,10 +6,9 @@ import de.unipassau.fim.projekt40.service_layer.EventTypeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 class Add {
@@ -23,25 +22,43 @@ class Add {
         this.eventTypeService = eventTypeService;
     }
 
-    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "addVer")
+    @PostMapping("addVer")
     @ResponseBody
     public String getQuery (@RequestParam String name, @RequestParam String place, @RequestParam String description,
                             @RequestParam String eventType, @RequestParam String datum) {
-        String checkOfDatum = checkDatum(datum);
-        String checkOfName = checkName(name);
-        String checkOfEventType = checkEventType(eventType);
-        String checkNothingIsEmpty = checkNothingIsEmpty(name, place, description);
-        if (checkNothingIsEmpty != null) {
-            return checkNothingIsEmpty;
-        } else if (checkOfDatum != null) {
-            return checkOfDatum;
-        } else if (checkOfName != null) {
-            return checkOfName;
-        } else if (checkOfEventType != null){
-            return checkOfEventType;
+        String checkNothingIsEmpty = checkNothingIsEmpty(name, place, description, eventType, datum);
+        if (checkNothingIsEmpty == null) {
+            name = name.substring(0, 1).toUpperCase() + name.substring(1);
+            place = place.substring(0, 1).toUpperCase() + place.substring(1);
+            description = description.substring(0, 1).toUpperCase() + description.substring(1);
+
+            String checkOfDatum = checkDatum(datum);
+            String checkOfName = checkName(name);
+            String checkOfEventType = checkEventType(eventType);
+
+            if (checkOfDatum != null) {
+                return checkOfDatum;
+            } else if (checkOfName != null) {
+                return checkOfName;
+            } else if (checkOfEventType != null) {
+                return checkOfEventType;
+            } else {
+                return insert(name, place, datum, description, eventType);
+            }
         } else {
-            return insert(name, place, datum, description, eventType);
+            return checkNothingIsEmpty;
         }
+    }
+
+    private String insert(String name, String place, String datum, String description, String eventType) {
+        eventService.insert(name, place, datum, description, eventType);
+        return "<script>\n" +
+                " window.setTimeout(\"location.href='/';\", 0);\n" +
+                "</script>" +
+                "<div>\n" +
+                "    <a href=\"http://localhost:8080\">Startseite</a> <br><br><br>\n" +
+                "</div>" +
+                "Die Veranstaltung wurde erfolgreich hinzugefügt";
     }
 
     private String checkDatum(String datum) {
@@ -85,8 +102,9 @@ class Add {
         return null;
     }
 
-    private String checkNothingIsEmpty(String name, String place, String description) {
-        if (name.isEmpty() || place.isEmpty() || description.isEmpty()) {
+    private String checkNothingIsEmpty(String name, String place, String description, String eventType, String datum) {
+        if (name.isEmpty() || place.isEmpty() || description.isEmpty()
+                || eventType.isEmpty() || datum.isEmpty()) {
             return "\"<script LANGUAGE='JavaScript'>\n" +
                     "    window.alert('Manche Felder sind leer!');\n" +
                     "    window.location.href='/add';\n" +
@@ -95,17 +113,4 @@ class Add {
         }
         return null;
     }
-
-    private String insert(String name, String place, String datum, String description, String eventType) {
-        eventService.insert(name, place, datum, description, eventType);
-        return "<script>\n" +
-                " window.setTimeout(\"location.href='/';\", 0);\n" +
-                "</script>" +
-                "<div>\n" +
-                "    <a href=\"http://localhost:8080\">Startseite</a> <br><br><br>\n" +
-                "</div>" +
-                "Die Veranstaltung wurde erfolgreich hinzugefügt";
-    }
-
-
 }
