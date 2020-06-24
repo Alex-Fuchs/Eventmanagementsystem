@@ -49,11 +49,9 @@ public class EventRepository {
         }
     }
 
-    public List<Event> findAllSort() {
-        List<Event> old = new ArrayList<>(jdbcTemplate.query(
+    public List<Event> findAll() {
+        return new ArrayList<>(jdbcTemplate.query(
                 "select * from Event", new VeranstaltungRowMapper()));
-        old.sort(Comparator.comparing(Event::getRankInt).reversed());
-        return old;
     }
 
     public List<Event> findAllInFuture() {
@@ -66,14 +64,15 @@ public class EventRepository {
         return events;
     }
 
-    public List<Event> findAll() {
-        return new ArrayList<>(jdbcTemplate.query(
-                "select * from Event", new VeranstaltungRowMapper()));
-    }
-
     public List<Event> findByEventType(String eventType) {
         List<Event> old = jdbcTemplate.query("SELECT * FROM Event WHERE eventType =? ",
                 new Object[] { eventType }, new VeranstaltungRowMapper());
+        return old;
+    }
+
+    public List<Event> findAllSort() {
+        List<Event> old = new ArrayList<>(jdbcTemplate.query(
+                "select * from Event", new VeranstaltungRowMapper()));
         old.sort(Comparator.comparing(Event::getRankInt).reversed());
         return old;
     }

@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Controller
 class Main {
 
@@ -33,8 +32,9 @@ class Main {
     }
 
     @GetMapping()
-    public String showAll(HttpServletRequest request, Model model) {
-        doPreparations(request, eventService.getLast20InFuture(), model);
+    public String showAll(HttpServletRequest request, Model model,
+                          @RequestParam(required = false, defaultValue = "20") String size) {
+        doPreparations(request, eventService.getLastNInFuture(Integer.parseInt(size)), model);
         return "index";
     }
 
@@ -44,21 +44,24 @@ class Main {
         return "add";
     }
 
-    @PostMapping("sort")
-    public String ShowAllWithEventType(HttpServletRequest request, Model model, @RequestParam String sort) {
-        doPreparations(request, eventService.getLast20FilteredByEventType(sort), model);
+    @GetMapping("sort")
+    public String ShowAllWithEventType(HttpServletRequest request, Model model, @RequestParam String sort,
+                                       @RequestParam(required = false, defaultValue = "20") String size) {
+        doPreparations(request, eventService.getLastNByEventType(sort, Integer.parseInt(size)), model);
         return "index";
     }
 
-    @PostMapping("search")
-    public String showAllWithSearch(HttpServletRequest request, Model model, @RequestParam String entry) {
-        doPreparations(request, eventService.getEventsBySearch(entry), model);
+    @GetMapping("search")
+    public String showAllWithSearch(HttpServletRequest request, Model model, @RequestParam String entry,
+                                    @RequestParam(required = false, defaultValue = "20") String size) {
+        doPreparations(request, eventService.getLastNBySearch(entry, Integer.parseInt(size)), model);
         return "index";
     }
 
     @PostMapping("vote")
     @ResponseBody
-    public String vote (HttpServletRequest request, HttpServletResponse response, @RequestParam String id, @RequestParam String ranking) {
+    public String vote (HttpServletRequest request, HttpServletResponse response,
+                        @RequestParam String id, @RequestParam String ranking) {
         long idLong = Long.parseLong(id);
         int value = Integer.parseInt(ranking);
         if (Math.abs(value) == 1) {

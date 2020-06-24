@@ -21,7 +21,7 @@
     <table>
         <thead>
         <th>
-            <form action="sort" method="post">
+            <form action="sort" method="get">
                 <label>
                     <select name="sort">
                         <option th:each="eventType : ${eventTypes}"
@@ -33,7 +33,7 @@
                 <input type="submit" value="anzeigen">
             </form></th>
         <th>
-            <form action="suche" method="post">
+            <form action="search" method="get">
                 <input type="text" placeholder="Suche nach Veranstaltungen" name="entry">
                 <input type="submit" value="Suchen">
             </form>

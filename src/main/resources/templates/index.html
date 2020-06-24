@@ -21,7 +21,7 @@
     <table>
         <thead>
         <th>
-            <form action="sort" method="post">
+            <form action="sort" method="get">
                 <label>
                     <select name="sort">
                         <option th:each="eventType : ${eventTypes}"
@@ -34,7 +34,7 @@
             </form>
         </th>
         <th>
-            <form action="search" method="post">
+            <form action="search" method="get">
                 <input type="text" placeholder="Suche nach Veranstaltungen" name="entry">
                 <input type="submit" value="Suchen">
             </form>
@@ -79,11 +79,16 @@
                 </form>
             </td>
             <td><form action="event"><input type="hidden" th:value="${event.id}" name="id">
-                <input type=submit value="Mehr anzeigen" class="showMore" style="width:100%"></form></td>
+                    <input type=submit value="Event anzeigen" class="showEvent" style="width:100%">
+                </form>
+            </td>
         </tr>
         <br><br><br>
         </tbody>
     </table>
+    <a class="showMore"
+       th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+       th:href="${urlBuilder.replaceQueryParam('size', events.size() + 20).toUriString()}">Ältere Events anzeigen</a>
     <footer id="verlistFooter" hidden="true">
         <p>Universität Passau © Jan, Ali, Lukas. All rights reserved (Desktop)</p>
     </footer>

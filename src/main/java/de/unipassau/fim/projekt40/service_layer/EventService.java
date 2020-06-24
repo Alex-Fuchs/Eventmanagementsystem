@@ -20,15 +20,15 @@ public class EventService {
         this.eventRepository = eventRepository;
     }
 
-    public List<EventDto> getLast20InFuture() {
-        return convertToDtos(getLastN(eventRepository.findAllInFuture(), 20));
-    }
-
     public List<EventDto> getLastN(int n) {
         return convertToDtos(getLastN(eventRepository.findAll(), n));
     }
 
-    public List<EventDto> getEventsBySearch(String entry) {
+    public List<EventDto> getLastNInFuture(int n) {
+        return convertToDtos(getLastN(eventRepository.findAllInFuture(), n));
+    }
+
+    public List<EventDto> getLastNBySearch(String entry, int n) {
         List<Event> searchedEvents = new ArrayList<>();
         for (Event Event : eventRepository.findAll()) {
             if (Event.getVer_name().toLowerCase().contains(entry.toLowerCase()) ||
@@ -36,20 +36,14 @@ public class EventService {
                 searchedEvents.add(Event);
             }
         }
-        return convertToDtos(searchedEvents);
+        return convertToDtos(getLastN(searchedEvents, n));
     }
 
-    public List<EventDto> getLast20FilteredByEventType(String sort) {
-        if (sort.equals("Alle (auch Vergangenheit)")) {
-            return convertToDtos(getLastN(eventRepository.findAll(), 20));
+    public List<EventDto> getLastNByEventType(String sort, int n) {
+        if (sort.equals("Alle mit Vergangenheit")) {
+            return getLastN(n);
         } else {
-            List<Event> events = new ArrayList<>();
-            for (Event event: getLastN(eventRepository.findAll(), 20)) {
-                if (event.getEventType().equals(sort)) {
-                    events.add(event);
-                }
-            }
-            return convertToDtos(events);
+            return convertToDtos(getLastN(eventRepository.findByEventType(sort), n));
         }
     }
 

@@ -24,7 +24,7 @@ public class EventTypeService {
 
     public List<EventTypeDto> getEventTypesWithAll() {
         List<EventType> eventTypes = eventTypeRepository.findAll();
-        eventTypes.add(0, new EventType("Alle (auch Vergangenheit)"));
+        eventTypes.add(0, new EventType("Alle mit Vergangenheit"));
         return convertToDtos(eventTypes);
     }
 
