@@ -65,7 +65,7 @@
             <td colspan="2"> Leider keine Veranstaltungen vorhanden</td>
         </tr>
         <tr th:each="event : ${events}"
-            th:attrappend="rank = ${#lists.contains(top3IDs, event.getId())} ? ${'rank' + top3IDs.indexOf(event.getId())} : notInTop">
+            th:attrappend="rank = ${#lists.contains(top3, event)} ? ${'rank' + top3.indexOf(event)} : notInTop">
             <td><span th:text="${event.ver_name}"> Name </span></td>
             <td><span th:text="${event.description}"> Beschreibung </span></td>
             <td><span th:text="${event.datum}"
@@ -73,15 +73,16 @@
             <td><form action="vote" method="post">
                     <input type="hidden" th:value="${event.id}" name="id" />
                     <input type="hidden" value="1" name="ranking" />
-                    <input type="submit" value="         gut          " th:id="${event.id}" th:class="${#lists.contains(upVote, event.id)} ? voted : notVoted">
+                    <input type="submit" value="         gut          " th:id="${event.id}" th:class="${#lists.contains(upVoteIDs, event.id)} ? voted : notVoted">
             </form>
                 <form action="vote" method="post">
                     <input type="hidden" th:value="${event.id}" name="id" />
                     <input type="hidden" value="-1"  name="ranking" />
-                    <input type="submit" value="     schlecht     " th:id="${event.id}" th:class="${#lists.contains(downVote, event.id)} ? voted : notVoted">
+                    <input type="submit" value="     schlecht     " th:id="${event.id}" th:class="${#lists.contains(downVoteIDs, event.id)} ? voted : notVoted">
                 </form>
             </td>
-            <td><form action="event"><input type="hidden" th:value="${event.id}" name="id">
+            <td><form action="event">
+                <input type="hidden" th:value="${event.id}" name="id">
                     <input type=submit value="Event anzeigen" class="showEvent" style="width:100%">
                 </form>
             </td>

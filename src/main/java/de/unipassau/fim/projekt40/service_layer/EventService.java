@@ -61,18 +61,12 @@ public class EventService {
         return convertToDtos(eventRepository.findAllSort().subList(0, 3));
     }
 
-    public List<Long> getTop3IDs() {
+    public List<Long> getInFutureIDs(List<EventDto> eventDtos) {
         List<Long> result = new ArrayList<>();
-        for (EventDto event: getTop3()) {
-            result.add(event.getId());
-        }
-        return result;
-    }
-
-    public List<Long> getInFutureIDs() {
-        List<Long> result = new ArrayList<>();
-        for (Event event: eventRepository.findAllInFuture()) {
-            result.add(event.getId());
+        for (EventDto eventDto: eventDtos) {
+            if (EventRepository.checkDateIsInFuture(eventDto.getDatum())) {
+                result.add(eventDto.getId());
+            }
         }
         return result;
     }

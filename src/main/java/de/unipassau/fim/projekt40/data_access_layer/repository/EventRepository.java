@@ -140,10 +140,10 @@ public class EventRepository {
         timer.schedule(new TimerTask() {
             public void run() {
                 System.out.println("UpdateWeatherTask is running at " + date
-                        + " with intervall of 1 minute");
+                        + " with intervall of 10 minutes");
                 updateWeather();
             }
-        }, date, 60 * 1000);
+        }, date, 60 * 10 * 1000);
     }
 
     private void updateWeather() {

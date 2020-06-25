@@ -94,17 +94,16 @@ class Main {
     }
 
     private void doPreparations(HttpServletRequest request, List<EventDto> events, Model model) {
-        ArrayList<Long> upVote = new ArrayList<>();
-        ArrayList<Long> downVote = new ArrayList<>();
-        setUpDownVoteLists(request, upVote, downVote);
+        ArrayList<Long> upVoteIDs = new ArrayList<>();
+        ArrayList<Long> downVoteIDs = new ArrayList<>();
+        setUpDownVoteLists(request, upVoteIDs, downVoteIDs);
 
         model.addAttribute("eventTypes", eventTypeService.getEventTypesWithAll());
-        model.addAttribute("upVote", upVote);
-        model.addAttribute("downVote", downVote);
         model.addAttribute("top3", eventService.getTop3());
-        model.addAttribute("top3IDs", eventService.getTop3IDs());
-        model.addAttribute("inFutureIDs", eventService.getInFutureIDs());
         model.addAttribute("events", events);
+        model.addAttribute("upVoteIDs", upVoteIDs);
+        model.addAttribute("downVoteIDs", downVoteIDs);
+        model.addAttribute("inFutureIDs", eventService.getInFutureIDs(events));
     }
 
     private void setUpDownVoteLists(HttpServletRequest request, ArrayList<Long> upVote, ArrayList<Long> downVote) {
