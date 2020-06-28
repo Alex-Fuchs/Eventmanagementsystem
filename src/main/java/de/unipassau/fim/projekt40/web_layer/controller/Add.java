@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Controller for adding a event per Post Request.
+ */
 @Controller
 class Add {
 
@@ -22,6 +25,15 @@ class Add {
         this.eventTypeService = eventTypeService;
     }
 
+    /**
+     * Adds the event if all parameters are valid.
+     *
+     * @param name name of the Event.
+     * @param place place of the Event.
+     * @param description description of the Event.
+     * @param eventType eventType of the Event.
+     * @param datum datum of the Event.
+     */
     @PostMapping("addVer")
     @ResponseBody
     public String getQuery (@RequestParam String name, @RequestParam String place, @RequestParam String description,
@@ -50,6 +62,15 @@ class Add {
         }
     }
 
+    /**
+     * Inserts the event. All parameters should be checked before.
+     *
+     * @param name name of the Event.
+     * @param place place of the Event.
+     * @param description description of the Event.
+     * @param eventType eventType of the Event.
+     * @param datum datum of the Event.
+     */
     private String insert(String name, String place, String datum, String description, String eventType) {
         eventService.insert(name, place, datum, description, eventType);
         return "<script>\n" +
@@ -61,6 +82,12 @@ class Add {
                 "Die Veranstaltung wurde erfolgreich hinzugefügt";
     }
 
+    /**
+     * Checks if the date is valid and in the future.
+     *
+     * @param datum datum of the event.
+     * @return Alert that is shown.
+     */
     private String checkDatum(String datum) {
         try {
             if (!EventRepository.checkDateIsInFuture(datum)) {
@@ -80,6 +107,12 @@ class Add {
         return null;
     }
 
+    /**
+     * Checks if the name is already used.
+     *
+     * @param name name of the event.
+     * @return Alert that is shown.
+     */
     private String checkName(String name) {
         if (eventService.isEventNameAlreadyUsed(name)) {
             return  "\"<script LANGUAGE='JavaScript'>\n" +
@@ -91,6 +124,12 @@ class Add {
         return null;
     }
 
+    /**
+     * Checks if the eventType exists.
+     *
+     * @param eventTypeName eventType of the event.
+     * @return Alert that is shown.
+     */
     private String checkEventType(String eventTypeName) {
         if (!eventTypeService.eventTypeExists(eventTypeName)) {
             return "\"<script LANGUAGE='JavaScript'>\n" +
@@ -102,6 +141,16 @@ class Add {
         return null;
     }
 
+    /**
+     * Checks if all parameters are not empty.
+     *
+     * @param name name of the Event.
+     * @param place place of the Event.
+     * @param description description of the Event.
+     * @param eventType eventType of the Event.
+     * @param datum datum of the Event.
+     * @return Alert that is shown.
+     */
     private String checkNothingIsEmpty(String name, String place, String description, String eventType, String datum) {
         if (name.isEmpty() || place.isEmpty() || description.isEmpty()
                 || eventType.isEmpty() || datum.isEmpty()) {

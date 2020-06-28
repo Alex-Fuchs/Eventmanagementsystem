@@ -2,6 +2,9 @@ package de.unipassau.fim.projekt40.web_layer.model;
 
 import java.util.Objects;
 
+/**
+ * DTO class for {@link de.unipassau.fim.projekt40.data_access_layer.data_access_object.Event}
+ */
 public class EventDto {
 
     private Long id;

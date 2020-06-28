@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The main controller of the web application with all but adding a event.
+ */
 @Controller
 class Main {
 
@@ -31,6 +34,12 @@ class Main {
         this.eventTypeService = eventTypeService;
     }
 
+    /**
+     * Shows the standard page with the last 20 events as default.
+     * Also the max. number of Events can be changed through {@code size}.
+     *
+     * @param size Max. number of shown events.
+     */
     @GetMapping()
     public String showAll(HttpServletRequest request, Model model,
                           @RequestParam(required = false, defaultValue = "20") String size) {
@@ -38,12 +47,24 @@ class Main {
         return "index";
     }
 
+    /**
+     * Shows the add page to add a event.
+     */
     @GetMapping("add")
     public String addEvent(Model model) {
         model.addAttribute("eventTypes", eventTypeService.getEventTypes());
         return "add";
     }
 
+    /**
+     * Shows the standard page with the last 20 events by eventType as default.
+     * {@code sort} is the EventType of the events. Also the max. number of
+     * Events can be changed through {@code size}.
+     *
+     * @param sort String of the EventType of the events that are shown. If
+     *             it doesn't match a eventType, no events are shown.
+     * @param size Max. number of shown events.
+     */
     @GetMapping("sort")
     public String ShowAllWithEventType(HttpServletRequest request, Model model, @RequestParam String sort,
                                        @RequestParam(required = false, defaultValue = "20") String size) {
@@ -51,6 +72,15 @@ class Main {
         return "index";
     }
 
+    /**
+     * Shows the standard page with the last 20 events by search as default.
+     * If the name or the place of the event contains {@code entry}, the event
+     * is shown. Also the max. number of Events can be changed through {@code size}.
+     *
+     * @param entry String of the EventType of the events that are shown. If
+     *              it doesn't match a eventType, no events are shown.
+     * @param size  Max. number of shown events.
+     */
     @GetMapping("search")
     public String showAllWithSearch(HttpServletRequest request, Model model, @RequestParam String entry,
                                     @RequestParam(required = false, defaultValue = "20") String size) {
@@ -58,6 +88,17 @@ class Main {
         return "index";
     }
 
+    /**
+     * Post Request for Voting. {@code ranking} contains +1 for positive, -1
+     * for negative vote. The old Voting is read through Cookies with
+     * {@link #getOldVoting(HttpServletRequest, String)}. After that both
+     * are compared and then the old voting is cancelled and maybe the
+     * opposite is voted. After that the new voting is set as a Cookie and
+     * a alert is shown.
+     *
+     * @param id        Id of the event to vote for.
+     * @param ranking   Can be +1 or -1 otherwise no vote is carried out.
+     */
     @PostMapping("vote")
     @ResponseBody
     public String vote (HttpServletRequest request, HttpServletResponse response,
@@ -87,12 +128,23 @@ class Main {
                 "Etwas ist mit dem Vote schief gelaufen!";
     }
 
+    /**
+     * Shows the page of an event.
+     *
+     * @param id The id of the event that is shown.
+     */
     @GetMapping("event")
     public String showEvent(HttpServletRequest request, Model model, @RequestParam String id) {
         doPreparations(request, eventService.getEventById(Integer.parseInt(id)), model);
         return "event";
     }
 
+    /**
+     * Sets up the model with all information that is needed in the thymeleaf
+     * standard page.
+     *
+     * @param events Events that are shown in the standard page.
+     */
     private void doPreparations(HttpServletRequest request, List<EventDto> events, Model model) {
         ArrayList<Long> upVoteIDs = new ArrayList<>();
         ArrayList<Long> downVoteIDs = new ArrayList<>();
@@ -106,6 +158,13 @@ class Main {
         model.addAttribute("inFutureIDs", eventService.getInFutureIDs(events));
     }
 
+    /**
+     * Collects all Events that are upvoted and downvoted by the user through
+     * Cookies.
+     *
+     * @param upVote List with all upvoted Events.
+     * @param downVote List with all downvoted Events.
+     */
     private void setUpDownVoteLists(HttpServletRequest request, ArrayList<Long> upVote, ArrayList<Long> downVote) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -119,6 +178,11 @@ class Main {
         }
     }
 
+    /**
+     * Gets the old voting of an event by the user through Cookies.
+     *
+     * @param id Id of the the event.
+     */
     private int getOldVoting(HttpServletRequest request, String id) {
         Cookie[] cookies = request.getCookies();
         Cookie voted = null;

@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service for the EventType class that returns the content of the database.
+ */
 @Service
 public class EventTypeService {
 
@@ -18,10 +21,20 @@ public class EventTypeService {
         this.eventTypeRepository = eventTypeRepository;
     }
 
+    /**
+     * Gets all EventTypes.
+     *
+     * @return List as DTOs.
+     */
     public List<EventTypeDto> getEventTypes() {
         return convertToDtos(eventTypeRepository.findAll());
     }
 
+    /**
+     * Gets all EventTypes with the type: all events with past.
+     *
+     * @return List as DTOs.
+     */
     public List<EventTypeDto> getEventTypesWithAll() {
         List<EventType> eventTypes = eventTypeRepository.findAll();
         eventTypes.add(0, new EventType("Alle mit Vergangenheit"));
@@ -32,6 +45,12 @@ public class EventTypeService {
         return (eventTypeRepository.findByName(name) != null);
     }
 
+    /**
+     * Converts a list of eventTypes to a list with DTOs.
+     *
+     * @param eventTypes list that should be converted.
+     * @return list with the DTOs.
+     */
     private List<EventTypeDto> convertToDtos(List<EventType> eventTypes) {
         List<EventTypeDto> eventTypeDtos = new ArrayList<>();
         for (EventType eventType: eventTypes) {
