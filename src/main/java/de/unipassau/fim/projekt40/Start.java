@@ -22,6 +22,9 @@ public class Start {
     private static boolean newStart;
     private static boolean newEventTypes;
 
+    /**
+     * Gets all user inputs for initialising and starts the spring application.
+     */
     public static void main(String[] args) throws IOException {
         BufferedReader bufferedReader
                 = new BufferedReader(new InputStreamReader(System.in));
@@ -53,6 +56,10 @@ public class Start {
         return newEventTypes;
     }
 
+    /**
+     * asks the user for new initialising or adding eventTypes. Also just a start
+     * can be done.
+     */
     private static void initialising(BufferedReader input) throws IOException {
         String answer;
         System.out.println("Soll die Datenbank neu initialisiert werden (1) oder "
@@ -75,6 +82,10 @@ public class Start {
         }
     }
 
+    /**
+     * Setting up the EventTypes for new initialising or adding eventTypes.
+     * There must be at least one eventType.
+     */
     private static void setEventTypes(BufferedReader input) throws IOException {
         String eventType;
         System.out.println("Geben Sie mind. einen gewünschten EventTypen" +
@@ -100,6 +111,9 @@ public class Start {
         }
     }
 
+    /**
+     * Adding Events in new initialising. It's possible to add no event.
+     */
     private static void setInitialisingEvents(BufferedReader input) throws IOException {
         String event;
         System.out.println("Geben Sie die gewünschten vorinitalisierten Events ein");
@@ -121,6 +135,9 @@ public class Start {
         }
     }
 
+    /**
+     * Validates the attributes of an event.
+     */
     private static boolean checkAttributes(String[] attributes) {
         if (attributes.length == 5 && checkNothingIsEmpty(attributes)) {
             formatAttributes(attributes);

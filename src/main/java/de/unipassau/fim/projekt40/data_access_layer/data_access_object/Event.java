@@ -2,6 +2,9 @@ package de.unipassau.fim.projekt40.data_access_layer.data_access_object;
 
 import java.util.Objects;
 
+/**
+ * Represents a Event with all fields of the database.
+ */
 public class Event {
 
     private Long id;

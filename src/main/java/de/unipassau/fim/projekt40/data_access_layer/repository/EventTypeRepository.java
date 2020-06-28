@@ -20,6 +20,10 @@ public class EventTypeRepository {
 
     private JdbcTemplate jdbcTemplate;
 
+    /**
+     * At a new Start all eventTypes are deleted and the new ones are fetched.
+     * At adding new EventTypes the new ones are fetched.
+     */
     @Autowired
     public EventTypeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -59,6 +63,12 @@ public class EventTypeRepository {
         }
     }
 
+    /**
+     * Inserts an eventType after validation and formatting of that eventType.
+     *
+     * @param eventType EventType to add.
+     * @return code if it was sucessful.
+     */
     private int insert(EventType eventType) {
         if (eventType != null && eventType.getName() != null
             && !eventType.getName().equals("")) {

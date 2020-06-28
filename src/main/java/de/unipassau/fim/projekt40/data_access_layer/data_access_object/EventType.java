@@ -2,6 +2,9 @@ package de.unipassau.fim.projekt40.data_access_layer.data_access_object;
 
 import java.util.Objects;
 
+/**
+ * Represents a EventType with the field of the database.
+ */
 public class EventType {
 
     private String name;

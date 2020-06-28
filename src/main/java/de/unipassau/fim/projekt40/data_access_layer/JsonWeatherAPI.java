@@ -7,8 +7,17 @@ import java.io.IOException;
 
 import java.util.Scanner;
 
+/**
+ * JSON Weather API for getting the weather of an event.
+ */
 public class JsonWeatherAPI
 {
+    /**
+     * Gets the id of the city of the event.
+     *
+     * @param city city of the event.
+     * @return id of the city.
+     */
     public static String getWoeid(String city)
     {
         try {
@@ -24,6 +33,13 @@ public class JsonWeatherAPI
         return null;
     }
 
+    /**
+     * Gets the weather of an event by {@code id}.
+     *
+     * @param id Id of the city of the event.
+     * @param datum datum of the event.
+     * @return weather as String.
+     */
     public static String getWeather(String id, String datum) {
         String[] zahl = datum.split("-");
         datum = zahl[0] + "/" + zahl[1] + "/" + zahl[2];
@@ -42,6 +58,12 @@ public class JsonWeatherAPI
         return null;
     }
 
+    /**
+     * Sends a get request to the weatherAPI.
+     *
+     * @param urlString String of the url.
+     * @return answer of the API.
+     */
     private static String useAPI(String urlString) throws IOException {
         String inline = "";
         URL url = new URL(urlString);
