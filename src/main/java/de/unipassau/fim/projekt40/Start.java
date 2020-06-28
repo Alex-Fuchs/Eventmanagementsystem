@@ -55,7 +55,7 @@ public class Start {
 
     private static void initialising(BufferedReader input) throws IOException {
         String answer;
-        System.out.println("Soll die Datenbank neu intitalisiert werden (1) oder "
+        System.out.println("Soll die Datenbank neu initialisiert werden (1) oder "
                 + "sollen neue EventTypen hinzugefügt werden (2) " +
                 "oder nichts verändert werden (3) -> (1/2/3)?");
         if ((answer = input.readLine()) != null) {
@@ -80,7 +80,7 @@ public class Start {
         System.out.println("Geben Sie mind. einen gewünschten EventTypen" +
                 " für die Veranstaltungen an.");
         System.out.println("Falls nur EventTypen hinzugefügt werden und nicht die DB" +
-                "neu initialisiert wird, werden nur neue Typen hinzugefügt.");
+                " neu initialisiert wird, werden nur neue Typen hinzugefügt.");
         System.out.println("Bestätigen Sie jeweils mit Enter und geben Sie" +
                 " \"quit\" ein um zu vollenden");
         while ((eventType = input.readLine()) != null
