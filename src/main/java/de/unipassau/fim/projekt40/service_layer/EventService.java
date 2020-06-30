@@ -87,7 +87,9 @@ public class EventService {
     public List<EventDto> getEventById(long id) {
         Event event = eventRepository.findById(id);
         List<Event> events = new ArrayList<>();
-        events.add(event);
+        if (event != null) {
+            events.add(event);
+        }
         return convertToDtos(events);
     }
 

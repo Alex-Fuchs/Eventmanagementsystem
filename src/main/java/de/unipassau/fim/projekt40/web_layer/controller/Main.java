@@ -5,12 +5,14 @@ import de.unipassau.fim.projekt40.service_layer.EventTypeService;
 import de.unipassau.fim.projekt40.web_layer.model.EventDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +45,7 @@ class Main {
     @GetMapping()
     public String showAll(HttpServletRequest request, Model model,
                           @RequestParam(required = false, defaultValue = "20") String size) {
-        doPreparations(request, eventService.getLastNInFuture(Integer.parseInt(size)), model);
+        doPreparations(request, eventService.getLastNInFuture(parseStringToInt(size)), model);
         return "index";
     }
 
@@ -68,7 +70,7 @@ class Main {
     @GetMapping("sort")
     public String ShowAllWithEventType(HttpServletRequest request, Model model, @RequestParam String sort,
                                        @RequestParam(required = false, defaultValue = "20") String size) {
-        doPreparations(request, eventService.getLastNByEventType(sort, Integer.parseInt(size)), model);
+        doPreparations(request, eventService.getLastNByEventType(sort, parseStringToInt(size)), model);
         return "index";
     }
 
@@ -84,7 +86,7 @@ class Main {
     @GetMapping("search")
     public String showAllWithSearch(HttpServletRequest request, Model model, @RequestParam String entry,
                                     @RequestParam(required = false, defaultValue = "20") String size) {
-        doPreparations(request, eventService.getLastNBySearch(entry, Integer.parseInt(size)), model);
+        doPreparations(request, eventService.getLastNBySearch(entry, parseStringToInt(size)), model);
         return "index";
     }
 
@@ -103,8 +105,14 @@ class Main {
     @ResponseBody
     public String vote (HttpServletRequest request, HttpServletResponse response,
                         @RequestParam String id, @RequestParam String ranking) {
-        long idLong = Long.parseLong(id);
-        int value = Integer.parseInt(ranking);
+        long idLong = parseStringToLong(id);
+        int value;
+        try {
+            value = Integer.parseInt(ranking);
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         if (Math.abs(value) == 1) {
             int oldVoting = getOldVoting(request, id);
             if (oldVoting == value) {
@@ -120,12 +128,9 @@ class Main {
                     "    window.location.href='/';\n" +
                     "    </script>\"" +
                     "Vielen Dank für deinen Vote";
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return "\"<script LANGUAGE='JavaScript'>\n" +
-                "    window.alert('Etwas ist mit dem Vote schief gelaufen!');\n" +
-                "    window.location.href='/';\n" +
-                "    </script>\"" +
-                "Etwas ist mit dem Vote schief gelaufen!";
     }
 
     /**
@@ -135,7 +140,7 @@ class Main {
      */
     @GetMapping("event")
     public String showEvent(HttpServletRequest request, Model model, @RequestParam String id) {
-        doPreparations(request, eventService.getEventById(Integer.parseInt(id)), model);
+        doPreparations(request, eventService.getEventById(parseStringToLong(id)), model);
         return "event";
     }
 
@@ -200,5 +205,25 @@ class Main {
             }
         }
         return 0;
+    }
+
+    private int parseStringToInt(String size) {
+        try {
+            int result = Integer.parseInt(size);
+            if (result < 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            return result;
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private long parseStringToLong(String size) {
+        try {
+            return Long.parseLong(size);
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }
